@@ -22,10 +22,13 @@ jobs:
         run: |
           git clone https://github.com/lxc/lxc.git
           cd lxc
-          git fetch --tags
           latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
-          git checkout $latest_tag
           echo "Latest lxc version: $latest_version"
+          rm -rf ./*
+          cd ../
+          wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
+          tar -zxvf $latest_version.tar.gz -C /lxc
+          cd lxc
 
       - name: Get toolchain version
         run: |

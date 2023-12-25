@@ -17,6 +17,7 @@ jobs:
 
       - name: Get latest lxc version
         run: |
+          rm -rf lxc
           git clone https://github.com/lxc/lxc.git
           cd lxc
           latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
@@ -32,7 +33,6 @@ jobs:
 
       - name: Build lxc
         run: |
-          git clone https://github.com/lxc/lxc.git
           cd lxc
           git checkout $latest_version
           ./autogen.sh && ./configure --host=arm-linux-androideabi --prefix="$(pwd)/../lxc_install" --enable-capabilities --disable-apparmor --disable-seccomp --disable-attach-detach --disable-tools --disable-uevent --disable-cgroups --disable-selinux --disable-console --without-python --without-lzma --without-protobuf --without-curl --without-yaml --without-bash --without-zlib --without-audit --without-initramfs --without-clvm --without-vsyslog --without-criu --without-pam

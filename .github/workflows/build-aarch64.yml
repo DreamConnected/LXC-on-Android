@@ -6,14 +6,15 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-23.04
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential automake autoconf libtool libcap-dev libapparmor-dev git meson
+        run: sudo apt-get update && sudo apt-get install -y build-essential automake autoconf libtool libcap-dev libapparmor-dev git
+             pip3 install meson
 
       - name: Get latest lxc version
         run: |
@@ -26,10 +27,10 @@ jobs:
       - name: Download and setup arm64-linux-android toolchain
         run: |
           wget https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip
-          unzip android-ndk-r21e-linux-x86_64.zip
+          unzip -q android-ndk-r21e-linux-x86_64.zip
           export ANDROID_NDK_HOME=$(pwd)/android-ndk-r21e
           export PATH=$PATH:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
-          $ANDROID_NDK_HOME/build/tools/make_standalone_toolchain.py --arch arm64 --api 29 --install-dir $(pwd)/arm64-linux-android-toolchain
+          $ANDROID_NDK_HOME/build/tools/make_standalone_toolchain.py --arch arm64 --api 29 --install-dir $(pwd)/arm64-linux-android-toolchain >/dev/null 2>&1
 
       - name: Build lxc
         run: |

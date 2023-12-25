@@ -41,8 +41,8 @@ jobs:
         run: |
           cd lxc
           git checkout $latest_version
-          CC=aarch64-linux-android-gcc CXX=aarch64-linux-android-g++ meson setup -Dprefix=/data/lxc build
-          CC=aarch64-linux-android-gcc CXX=aarch64-linux-android-g++ meson compile -C build
+          CC=$(pwd)/arm64-linux-android-toolchain/bin/aarch64-linux-android-gcc CXX=$(pwd)/arm64-linux-android-toolchain/bin/aarch64-linux-android-g++ meson setup -Dprefix=/data/lxc build
+          CC=$(pwd)/arm64-linux-android-toolchain/bin/aarch64-linux-android-gcc CXX=$(pwd)/arm64-linux-android-toolchain/bin/aarch64-linux-android-g++ meson compile -C build
           make && make install
 
       - name: Zip lxc

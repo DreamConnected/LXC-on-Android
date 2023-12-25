@@ -27,8 +27,7 @@ jobs:
           rm -rf ./*
           cd ../
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
-          mkdir lxc
-          tar -zxvf $latest_version.tar.gz -C /lxc
+          tar -zxvf $latest_version.tar.gz -C ./lxc
           cd lxc
 
       - name: Get toolchain version

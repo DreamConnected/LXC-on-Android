@@ -35,7 +35,8 @@ jobs:
 
       - name: Build lxc
         run: |
-          cd lxc-lxc-$latest_version
+          version=$(echo ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
+          cd lxc-lxc-$version
           CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ meson setup -Dprefix=/data/lxc build
           CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ meson compile -C build
           make && make install

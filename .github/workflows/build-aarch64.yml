@@ -35,6 +35,7 @@ jobs:
           export PATH=$PATH:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
           $ANDROID_NDK_HOME/build/tools/make_standalone_toolchain.py --arch arm64 --api 29 --install-dir $(pwd)/arm64-linux-android-toolchain >/dev/null 2>&1
           export PATH=$PATH:$(pwd)/arm64-linux-android-toolchain/bin
+          ls $(pwd)/arm64-linux-android-toolchain/bin/
 
       - name: Build lxc
         run: |

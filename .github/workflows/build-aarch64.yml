@@ -41,6 +41,7 @@ jobs:
           CC=/home/runner/work/LXC-on-Android/LXC-on-Android/aarch64-linux-gnu/bin/aarch64-linux-gnu-gcc CXX=/home/runner/work/LXC-on-Android/LXC-on-Android/aarch64-linux-gnu/bin/aarch64-linux-gnu-g++ meson setup -Dprefix=/data/lxc build
           CC=/home/runner/work/LXC-on-Android/LXC-on-Android/aarch64-linux-gnu/bin/aarch64-linux-gnu-gcc CXX=/home/runner/work/LXC-on-Android/LXC-on-Android/aarch64-linux-gnu/bin/aarch64-linux-gnu-g++ meson compile -C build
           make && make install
+          cat build/meson-logs/meson-log.txt
 
       - name: Zip lxc
         run: |

@@ -14,7 +14,14 @@ jobs:
 
       - name: Install dependencies
         run: | 
-             sudo apt-get update && sudo apt-get install -y build-essential automake autoconf libtool libcap-dev libapparmor-dev git python3-pip
+             sudo apt-get update && sudo apt-get install --yes --no-install-recommends \
+             apparmor bash-completion bridge-utils build-essential busybox-static clang python3-pip \
+             cloud-image-utils curldbus debhelper debootstrap devscripts dnsmasq-base docbook2x \
+             doxygen edfakeroot file gcc graphviz git iptables meson net-tools libapparmor-dev \
+             libcap-dev libgnutls28-dev liblua5.2-dev libpam0g-dev libseccomp-dev libselinux1-devlibtool \
+             linux-libc-dev llvm lsb-release make openssl pkg-config python3-all-dev python3-setuptools \
+             rsync squashfs-tools uidmap unzip uuid-runtime wget xz-utils systemd-coredump libdbus-1-dev
+             apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
              pip3 install meson==0.63
 
       - name: Get latest lxc version
@@ -32,13 +39,14 @@ jobs:
           export ANDROID_NDK_HOME=$(pwd)/android-ndk-r21e
           export PATH=$PATH:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
           $ANDROID_NDK_HOME/build/tools/make_standalone_toolchain.py --arch arm64 --api 29 --install-dir $(pwd)/arm64-linux-android-toolchain >/dev/null 2>&1
+          export PATH=$PATH:$(pwd)/arm64-linux-android-toolchain/bin
 
       - name: Build lxc
         run: |
           cd lxc
           git checkout $latest_version
-          meson setup -Dprefix=/usr build
-          meson compile -C build
+          CC=aarch64-linux-android-gcc CXX=aarch64-linux-android-g++ meson setup -Dprefix=/data/lxc build
+          CC=aarch64-linux-android-gcc CXX=aarch64-linux-android-g++ meson compile -C build
           make && make install
 
       - name: Zip lxc

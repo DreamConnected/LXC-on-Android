@@ -31,6 +31,8 @@ jobs:
         run: |
           git clone https://github.com/theradcolor/aarch64-linux-gnu --depth=1
           export PATH=$PATH:$(pwd)/aarch64-linux-gnu/bin
+          chmod +x $(pwd)/aarch64-linux-gnu/bin/*
+          aarch64-linux-gnu-gcc -v
 
       - name: Build lxc
         run: |

@@ -15,8 +15,16 @@ jobs:
       - name: Install dependencies
         run: | 
              sudo apt-get update -qq
-             sudo apt-get install -qq clang meson llvm
-             sudo apt-get install -qq libapparmor-dev libcap-dev libseccomp-dev libselinux1-dev linux-libc-dev libpam0g-dev docbook2x libsystemd-dev
+             sudo apt-get install --yes --no-install-recommends \
+                  apparmor bash-completion bridge-utils build-essential \
+                  busybox-static clang cloud-image-utils curl dbus debhelper debootstrap \
+                  devscripts dnsmasq-base docbook2x doxygen ed fakeroot file gcc graphviz \
+                  git iptables meson net-tools libapparmor-dev libcap-dev libgnutls28-dev liblua5.2-dev \
+                  libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev \
+                  llvm lsb-release make openssl pkg-config python3-all-dev \
+                  python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime \
+                  wget xz-utils systemd-coredump libdbus-1-dev
+             sudo apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
 
       - name: Get latest lxc version
         run: |
@@ -31,7 +39,7 @@ jobs:
 
       - name: Get toolchain version
         run: |
-          aarch64-linux-gnu-gcc -v
+          gcc -v
 
       - name: Build lxc
         run: |

@@ -80,9 +80,8 @@ jobs:
         run: |
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
-          ls -al /usr/lib/x86_64-linux-gnu/pkgconfig
-          meson setup build --cross-file android-aarch64
-          meson compile -C build --cross-file android-aarch64
+          sudo meson setup build --cross-file android-aarch64
+          sudo meson compile -C build --cross-file android-aarch64
           #make && make install
 
       - name: Zip lxc

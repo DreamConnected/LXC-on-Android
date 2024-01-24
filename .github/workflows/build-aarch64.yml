@@ -56,8 +56,11 @@ jobs:
 
       - name: Check the compilation configuration
         run: |
+          echo C Path:
           $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang --version
-          echo $PKG_CONFIG_PATH
+          echo PKG-CONFIG Path:
+          pkg-config --list-all
+          pkg-config --variable pc_path pkg-config
         
       - name: Build lxc
         run: |

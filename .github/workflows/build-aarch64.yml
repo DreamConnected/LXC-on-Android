@@ -56,7 +56,8 @@ jobs:
 
       - name: Get toolchain version
         run: |
-          $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang -v
+          #$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang -v
+          /home/runner/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang --version
 
       - name: Build lxc
         run: |

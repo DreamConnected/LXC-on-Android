@@ -80,8 +80,7 @@ jobs:
         run: |
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
-          export PKG_CONFIG_PATH=/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
-          export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33
+          ls -al /usr/local/lib/x86_64-linux-gnu/pkgconfig
           meson setup build --cross-file android-aarch64
           meson compile -C build --cross-file android-aarch64
           #make && make install

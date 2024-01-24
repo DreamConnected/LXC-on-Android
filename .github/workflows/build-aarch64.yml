@@ -80,7 +80,10 @@ jobs:
         run: |
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
-          ls -al /usr/local/lib/x86_64-linux-gnu/pkgconfig
+          ls -al /usr/local/lib/pkgconfig
+          ls -al /usr/local/share/pkgconfig
+          ls -al /usr/lib/x86_64-linux-gnu/pkgconfig
+          ls -al /usr/lib/pkgconfig:/usr/share/pkgconfig
           meson setup build --cross-file android-aarch64
           meson compile -C build --cross-file android-aarch64
           #make && make install

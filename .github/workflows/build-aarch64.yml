@@ -39,20 +39,31 @@ jobs:
 
       - name: Configure Android NDK
         run: |
-          wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
+          wget -q https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
           unzip android-ndk-r26b-linux.zip
-          ls -l
+          export ANDROID_NDK_HOME=~/android-ndk-r26b
+          export PATH=$PATH:$ANDROID_NDK_HOME
+
+          mkdir -p ~/.local/share/meson/cross/
+          echo "[binaries]" > ~/.local/share/meson/cross/android-aarch64
+          echo "c = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "cpp = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang++'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "ar = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-ar'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "strip = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-strip'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "" >> ~/.local/share/meson/cross/android-aarch64
+          echo "[properties]" >> ~/.local/share/meson/cross/android-aarch64
+          echo "sys_root = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot'" >> ~/.local/share/meson/cross/android-aarch64
 
       - name: Get toolchain version
         run: |
-          gcc -v
+          $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang -v
 
       - name: Build lxc
         run: |
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
-          meson setup build
-          meson compile -C build
+          meson setup build --cross-file android-aarch64
+          meson compile -C build --cross-file android-aarch64
           #make && make install
 
       - name: Zip lxc

@@ -37,6 +37,12 @@ jobs:
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz
 
+      - name: Configure Android NDK
+        run: |
+          wget https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
+          unzip android-ndk-r26b-linux.zip
+          ls -l
+
       - name: Get toolchain version
         run: |
           gcc -v

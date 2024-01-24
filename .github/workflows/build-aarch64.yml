@@ -53,7 +53,7 @@ jobs:
           echo "ar = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar'" >> ~/.local/share/meson/cross/android-aarch64
           echo "ld = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/ld'" >> ~/.local/share/meson/cross/android-aarch64
           echo "strip = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "pkgconfig = '/usr/lib/x86_64-linux-gnu/pkgconfig'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "pkgconfig = '/usr/lib/x86_64-linux-gnu/pkgconfig/'" >> ~/.local/share/meson/cross/android-aarch64
           echo "" >> ~/.local/share/meson/cross/android-aarch64
           
           echo "[properties]" >> ~/.local/share/meson/cross/android-aarch64

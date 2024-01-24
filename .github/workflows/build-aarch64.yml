@@ -18,7 +18,7 @@ jobs:
              sudo apt-get install --yes --no-install-recommends \
                   apparmor bash-completion bridge-utils build-essential \
                   busybox-static clang cloud-image-utils curl dbus debhelper debootstrap \
-                  devscripts dnsmasq-base docbook2x doxygen ed fakeroot file cmake graphviz \
+                  devscripts dnsmasq-base docbook2x doxygen ed fakeroot file gcc cmake graphviz \
                   git iptables meson net-tools libapparmor-dev libcap-dev libgnutls28-dev liblua5.2-dev \
                   libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev \
                   llvm lsb-release make openssl pkg-config python3-all-dev \
@@ -57,6 +57,13 @@ jobs:
           
           echo "[properties]" >> ~/.local/share/meson/cross/android-aarch64
           echo "sys_root = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "" >> ~/.local/share/meson/cross/android-aarch64
+
+          echo "[built-in options]" >> ~/.local/share/meson/cross/android-aarch64
+          echo "c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types', '--sysroot=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot']" >> ~/.local/share/meson/cross/android-aarch64
+          echo "c_link_args = ['-Wl,-O1', '-Wl,--hash-style=gnu', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
+          echo "cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types', '--sysroot=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot']" >> ~/.local/share/meson/cross/android-aarch64
+          echo "cpp_link_args = ['-Wl,-O1', '-Wl,--hash-style=gnu', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
 
       - name: Check the compilation configuration
         run: |

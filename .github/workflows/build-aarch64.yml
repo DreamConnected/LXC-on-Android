@@ -43,7 +43,8 @@ jobs:
           unzip android-ndk-r26b-linux.zip
           export ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/25.2.9519653
           export PATH=$PATH:$ANDROID_NDK_HOME
-
+          export PKG_CONFIG_PATH=/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
+          export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33
           mkdir -p ~/.local/share/meson/cross/
           
           echo "[binaries]" > ~/.local/share/meson/cross/android-aarch64
@@ -52,7 +53,7 @@ jobs:
           echo "ar = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar'" >> ~/.local/share/meson/cross/android-aarch64
           echo "ld = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/ld'" >> ~/.local/share/meson/cross/android-aarch64
           echo "strip = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "pkgconfig = '/usr/local/lib/x86_64-linux-gnu/pkgconfig'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "pkgconfig = '/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig'" >> ~/.local/share/meson/cross/android-aarch64
           echo "" >> ~/.local/share/meson/cross/android-aarch64
           
           echo "[properties]" >> ~/.local/share/meson/cross/android-aarch64
@@ -72,6 +73,8 @@ jobs:
           echo PKG-CONFIG Path:
           pkg-config --list-all
           pkg-config --variable pc_path pkg-config
+          echo ENV:
+          env
         
       - name: Build lxc
         run: |

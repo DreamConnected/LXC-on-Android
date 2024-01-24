@@ -23,7 +23,7 @@ jobs:
                   libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev \
                   llvm lsb-release make openssl pkg-config python3-all-dev \
                   python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime \
-                  wget xz-utils systemd-coredump libdbus-1-dev
+                  wget xz-utils systemd-coredump libdbus-1-dev libsystemd-dev
              sudo apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
 
       - name: Get latest lxc version
@@ -37,7 +37,7 @@ jobs:
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz
 
-      - name: Configure Android NDK
+      - name: Configure the Android NDK
         run: |
           wget -q https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
           unzip android-ndk-r26b-linux.zip
@@ -54,9 +54,10 @@ jobs:
           echo "[properties]" >> ~/.local/share/meson/cross/android-aarch64
           echo "sys_root = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot'" >> ~/.local/share/meson/cross/android-aarch64
 
-      - name: Get toolchain version
+      - name: Check the compilation configuration
         run: |
           $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang --version
+          echo $PKG_CONFIG_PATH
         
       - name: Build lxc
         run: |

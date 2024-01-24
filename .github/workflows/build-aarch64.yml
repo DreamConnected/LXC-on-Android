@@ -45,12 +45,16 @@ jobs:
           export PATH=$PATH:$ANDROID_NDK_HOME
 
           mkdir -p ~/.local/share/meson/cross/
+          
           echo "[binaries]" > ~/.local/share/meson/cross/android-aarch64
           echo "c = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang'" >> ~/.local/share/meson/cross/android-aarch64
           echo "cpp = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang++'" >> ~/.local/share/meson/cross/android-aarch64
           echo "ar = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "ld = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/ld'" >> ~/.local/share/meson/cross/android-aarch64
           echo "strip = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "pkgconfig = '/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig'" >> ~/.local/share/meson/cross/android-aarch64
           echo "" >> ~/.local/share/meson/cross/android-aarch64
+          
           echo "[properties]" >> ~/.local/share/meson/cross/android-aarch64
           echo "sys_root = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot'" >> ~/.local/share/meson/cross/android-aarch64
 

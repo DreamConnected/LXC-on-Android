@@ -80,7 +80,7 @@ jobs:
         run: |
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
-          meson setup build --cross-file --cross-file android-aarch64
+          meson setup build --cross-file android-aarch64
           meson compile -C build
           #make && make install
 

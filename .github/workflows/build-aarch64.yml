@@ -39,8 +39,6 @@ jobs:
 
       - name: Configure the Android NDK
         run: |
-          wget -q https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
-          unzip android-ndk-r26b-linux.zip
           export ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/25.2.9519653
           export PATH=$PATH:$ANDROID_NDK_HOME
           export PKG_CONFIG_PATH=/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
@@ -59,13 +57,20 @@ jobs:
           
           echo "[properties]" >> ~/.local/share/meson/cross/android-aarch64
           echo "sys_root = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "pkg_config_libdir = '/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig'" >> ~/.local/share/meson/cross/android-aarch64
           echo "" >> ~/.local/share/meson/cross/android-aarch64
 
           echo "[built-in options]" >> ~/.local/share/meson/cross/android-aarch64
-          echo "c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types', '--sysroot=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot']" >> ~/.local/share/meson/cross/android-aarch64
-          echo "c_link_args = ['-Wl,-O1', '-Wl,--hash-style=gnu', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
-          echo "cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types', '--sysroot=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot']" >> ~/.local/share/meson/cross/android-aarch64
-          echo "cpp_link_args = ['-Wl,-O1', '-Wl,--hash-style=gnu', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
+          echo "c_args = ['--sysroot=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot']" >> ~/.local/share/meson/cross/android-aarch64
+          echo "c_link_args = ['-Wl,-rpath', '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
+          echo "cpp_args = ['--sysroot=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot']" >> ~/.local/share/meson/cross/android-aarch64
+          echo "cpp_link_args = ['-Wl,-rpath', '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
+
+          echo "[host_machine]" >> ~/.local/share/meson/cross/android-aarch64
+          echo "system = 'linux'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "cpu_family = 'aarch64'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "cpu = 'armv8-a'" >> ~/.local/share/meson/cross/android-aarch64
+          echo "endian = 'little'" >> ~/.local/share/meson/cross/android-aarch64
 
       - name: Check the compilation configuration
         run: |
@@ -81,7 +86,20 @@ jobs:
         run: |
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
-          meson setup build --cross-file android-aarch64
+          meson setup build -Dprefix=/data/lxc \
+                            --default-library=static \
+                            -Dinit-script=sysvinit \
+                            -Druntime-path=/data/local/tmp \
+                            -Dstrip=true \
+                            -Dcapabilities=false \
+                            -Dseccomp=false \
+                            -Dselinux=false \
+                            -Dapparmor=false \
+                            -Dlog-path=/data/lxc/var/log/lxc \
+                            -Ddata-path=/data/lxc/lib/lxc \
+                            --localstatedir=/data/lxc/var/ \
+                            -Dc_link_args="-static" \
+                            --cross-file android-aarch64
           meson compile -C build
           #make && make install
 

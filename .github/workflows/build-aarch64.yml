@@ -43,7 +43,7 @@ jobs:
           unzip android-ndk-r26b-linux.zip
           export ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/25.2.9519653
           export PATH=$PATH:$ANDROID_NDK_HOME
-          export PKG_CONFIG_PATH=/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
+          export PKG_CONFIG_PATH=/usr/bin/pkg-config
           export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33
           mkdir -p ~/.local/share/meson/cross/
           
@@ -80,8 +80,8 @@ jobs:
         run: |
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
-          sudo meson setup build --cross-file /home/runner/.local/share/meson/cross/android-aarch64
-          sudo meson compile -C build --cross-file android-aarch64
+          meson setup build --cross-file --cross-file android-aarch64
+          meson compile -C build
           #make && make install
 
       - name: Zip lxc

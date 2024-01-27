@@ -1,0 +1,93 @@
+From 71c6544d1c05eac40b681509f9cc720728ed0dec Mon Sep 17 00:00:00 2001
+From: lateautumn233 <lateautumn233@foxmail.com>
+Date: Fri, 7 Jul 2023 22:20:46 +0800
+Subject: [PATCH] meson: use static lib
+
+Signed-off-by: lateautumn233 <lateautumn233@foxmail.com>
+---
+ meson.build | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index cb6f17fa..6eeb5b95 100644
+--- a/meson.build
++++ b/meson.build
+@@ -277,7 +277,7 @@ else
+ endif
+ 
+ if want_dbus
+-    libdbus = dependency('dbus-1', required: true)
++    libdbus = dependency('dbus-1', required: true,static : true)
+     pkgconfig_libs += libdbus
+     liblxc_dependencies += libdbus
+     srcconf.set10('HAVE_DBUS', libdbus.found())
+@@ -331,12 +331,12 @@ if not sgml2man.found()
+ endif
+ 
+ ## Threads.
+-threads = dependency('threads')
++threads = dependency('threads',static : true)
+ liblxc_dependencies += threads
+ 
+ ## Seccomp.
+ if want_seccomp
+-    libseccomp = dependency('libseccomp', required: false)
++    libseccomp = dependency('libseccomp', required: false,static : true)
+     srcconf.set10('HAVE_SECCOMP', libseccomp.found())
+     pkgconfig_libs += libseccomp
+     liblxc_dependencies += libseccomp
+@@ -379,7 +379,7 @@ endif
+ 
+ ## SELinux.
+ if want_selinux
+-    libselinux = dependency('libselinux', required: false)
++    libselinux = dependency('libselinux', required: false,static : true)
+     srcconf.set10('HAVE_SELINUX', libselinux.found())
+     pkgconfig_libs += libselinux
+     liblxc_dependencies += libselinux
+@@ -389,7 +389,7 @@ endif
+ 
+ ## AppArmor.
+ if want_apparmor
+-    libapparmor = dependency('libapparmor', required: false)
++    libapparmor = dependency('libapparmor', required: false,static : true)
+     srcconf.set10('HAVE_APPARMOR', libapparmor.found())
+     # We do not use the AppArmor library at runtime, so it's not in our pkg-config.
+     liblxc_dependencies += libapparmor
+@@ -399,7 +399,7 @@ endif
+ 
+ ## OpenSSL.
+ if want_openssl
+-    libopenssl = dependency('openssl', required: false)
++    libopenssl = dependency('openssl', required: false,static : true)
+     srcconf.set10('HAVE_OPENSSL', libopenssl.found())
+     pkgconfig_libs += libopenssl
+     liblxc_dependencies += libopenssl
+@@ -409,7 +409,7 @@ endif
+ 
+ ## Libcap..
+ if want_capabilities
+-    libcap = dependency('libcap', required: false)
++    libcap = dependency('libcap', required: false,static : true)
+     if not libcap.found()
+         # Compat with Ubuntu 14.04 which ships libcap w/o .pc file
+         libcap = cc.find_library('cap', required: false)
+@@ -861,9 +861,8 @@ subdir('src/lxc/pam')
+ 
+ liblxc_link_whole = [liblxc_static]
+ 
+-liblxc = shared_library(
++liblxc = static_library(
+     'lxc',
+-    version: liblxc_version,
+     include_directories: liblxc_includes,
+     link_args: ['-DPIC'],
+     c_args: ['-DPIC'],
+@@ -871,6 +870,7 @@ liblxc = shared_library(
+     dependencies: liblxc_dependencies,
+     install: true)
+ 
++
+ liblxc_dep = declare_dependency(
+     link_with: liblxc,
+     dependencies: liblxc_dependencies)

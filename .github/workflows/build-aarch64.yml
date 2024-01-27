@@ -64,9 +64,9 @@ jobs:
           echo "" >> ~/.local/share/meson/cross/android-aarch64
 
           echo "[built-in options]" >> ~/.local/share/meson/cross/android-aarch64
-          echo "c_args = ['--sysroot=~/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu']" >> ~/.local/share/meson/cross/android-aarch64
+          echo "c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']" >> ~/.local/share/meson/cross/android-aarch64
           echo "c_link_args = ['-Wl,-rpath', '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
-          echo "cpp_args = ['--sysroot=~/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu']" >> ~/.local/share/meson/cross/android-aarch64
+          echo "cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']" >> ~/.local/share/meson/cross/android-aarch64
           echo "cpp_link_args = ['-Wl,-rpath', '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
 
           echo "[target_machine]" >> ~/.local/share/meson/cross/android-aarch64

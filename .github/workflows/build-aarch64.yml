@@ -87,7 +87,7 @@ jobs:
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
           wget -O ./71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch https://raw.githubusercontent.com/DreamConnected/lxc-checkconfig/main/71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch
-          patch -p1 < 71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch
+          patch -N -p1 < 71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch
           meson setup build -Dprefix=/data/lxc \
                             --default-library=static \
                             -Dinit-script=sysvinit \

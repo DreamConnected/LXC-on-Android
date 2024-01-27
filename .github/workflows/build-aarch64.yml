@@ -66,7 +66,7 @@ jobs:
           echo "cpp_args = ['--sysroot=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot']" >> ~/.local/share/meson/cross/android-aarch64
           echo "cpp_link_args = ['-Wl,-rpath', '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
 
-          echo "[host_machine]" >> ~/.local/share/meson/cross/android-aarch64
+          echo "[target_machine]" >> ~/.local/share/meson/cross/android-aarch64
           echo "system = 'linux'" >> ~/.local/share/meson/cross/android-aarch64
           echo "cpu_family = 'aarch64'" >> ~/.local/share/meson/cross/android-aarch64
           echo "cpu = 'armv8-a'" >> ~/.local/share/meson/cross/android-aarch64
@@ -86,6 +86,8 @@ jobs:
         run: |
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
+          wget -O ./71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch https://raw.githubusercontent.com/DreamConnected/lxc-checkconfig/main/71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch
+          patch -p1 < 71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch
           meson setup build -Dprefix=/data/lxc \
                             --default-library=static \
                             -Dinit-script=sysvinit \

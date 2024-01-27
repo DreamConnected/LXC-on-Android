@@ -84,6 +84,8 @@ jobs:
           pkg-config --variable pc_path pkg-config
           echo ENV:
           env
+          rm $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/sched.h
+          rm $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/openat2.h
         
       - name: Build lxc
         run: |

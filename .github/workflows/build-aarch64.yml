@@ -35,10 +35,10 @@ jobs:
           echo "Latest lxc version: $latest_version"
           echo "::set-output name=latest_version::$latest_version"
           echo "::set-output name=lxc_source_dir::$lxc_source_dir"
-          rm -rf ./*
           cd ../
+          rm -rf lxc/
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
-          tar -zxvf $latest_version.tar.gz
+          tar -zxvf $latest_version.tar.gz && mv lxc-$latest_version lxc
           rm $latest_version.tar.gz
 
       - name: Patch lxc
@@ -128,8 +128,7 @@ jobs:
         
       - name: Build lxc
         run: |
-          version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
-          cd lxc-lxc-$version
+          cd lxc
           meson setup build -Dprefix=/data/lxc \
                             --default-library=static \
                             -Dinit-script=sysvinit \

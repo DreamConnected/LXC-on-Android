@@ -14,7 +14,7 @@ jobs:
       - name: Install dependencies
         run: | 
              sudo apt-get update -qq
-             sudo apt-get install --yes \
+             sudo apt-get install -qq --yes \
                   apparmor bash-completion bridge-utils build-essential \
                   busybox-static clang cloud-image-utils curl dbus debhelper debootstrap \
                   devscripts dnsmasq-base docbook2x doxygen ed fakeroot file gcc cmake graphviz \
@@ -33,6 +33,8 @@ jobs:
           lxc_source_dir=$(pwd)
           latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
           echo "Latest lxc version: $latest_version"
+          echo "::set-output name=latest_version::$latest_version"
+          echo "::set-output name=lxc_source_dir::$lxc_source_dir"
           rm -rf ./*
           cd ../
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
@@ -60,7 +62,6 @@ jobs:
         run: |
           wget https://musl.cc/aarch64-linux-musl-cross.tgz
           tar -xzf aarch64-linux-musl-cross.tgz
-          ls -al
           
           # aarch64-linux-gnu
           cat << EOF >> aarch64-linux-gnu

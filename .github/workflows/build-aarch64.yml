@@ -144,7 +144,7 @@ jobs:
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var/ \
                             -Dc_link_args="-static" \
-                            --buildtype release
+                            --buildtype release \
                             --cross-file ../aarch64-linux-gnu
           meson compile -C build
           meson install -C build
@@ -169,7 +169,7 @@ jobs:
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var/ \
                             -Dc_link_args="-static" \
-                            --buildtype release
+                            --buildtype release \
                             --cross-file ../aarch64-linux-musl \
                             --wipe
           meson compile -C build

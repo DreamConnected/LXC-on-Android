@@ -37,6 +37,9 @@ jobs:
           cd ../
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz
+        env:
+          latest_version: ${{ steps.step.outputs.latest_version }}
+          lxc_source_dir: ${{ steps.step.outputs.lxc_source_dir }} 
 
       - name: Patch lxc
         run: |
@@ -57,7 +60,8 @@ jobs:
       - name: Configure the cross file
         run: |
           wget https://musl.cc/aarch64-linux-musl-cross.tgz
-          tar -xf aarch64-linux-musl-cross.tgz
+          tar -xzf aarch64-linux-musl-cross.tgz
+          ll
           
           # aarch64-linux-gnu
           cat << EOF >> aarch64-linux-gnu

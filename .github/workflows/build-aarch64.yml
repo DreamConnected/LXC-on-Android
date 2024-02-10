@@ -23,13 +23,14 @@ jobs:
                   libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev \
                   llvm lsb-release make openssl pkg-config python3-all-dev \
                   python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime \
-                  wget xz-utils systemd-coredump libdbus-1-dev libsystemd-dev
+                  wget xz-utils systemd-coredump libdbus-1-dev libsystemd-dev gcc-aarch64-linux-gnu
              sudo apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
 
       - name: Get latest lxc version
         run: |
           git clone https://github.com/lxc/lxc.git
           cd lxc
+          lxc_source_dir=$(pwd)
           latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
           echo "Latest lxc version: $latest_version"
           rm -rf ./*
@@ -37,76 +38,103 @@ jobs:
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz
 
-      - name: Configure the Android NDK
+      - name: Patch lxc
         run: |
-          wget https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/aarch64-linux-gnu/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu.tar.xz
-          tar -xf sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu.tar.xz
-          
-          export ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/25.2.9519653
-          export PATH=$PATH:$ANDROID_NDK_HOME
-          export PKG_CONFIG_PATH=/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
-          export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33
-          mkdir -p ~/.local/share/meson/cross/
-          
-          echo "[binaries]" > ~/.local/share/meson/cross/android-aarch64
-          echo "c = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "cpp = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang++'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "ar = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "ld = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/ld'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "strip = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "pkgconfig = '/usr/bin/pkg-config'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "cmake = '/usr/bin/cmake'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "" >> ~/.local/share/meson/cross/android-aarch64
-          
-          echo "[properties]" >> ~/.local/share/meson/cross/android-aarch64
-          echo "sys_root = '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "pkg_config_libdir = '/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "" >> ~/.local/share/meson/cross/android-aarch64
+          if [[ "$latest_version" > "5.0.0" && "$latest_version" < "5.9.9" ]]; then
+            sed -i "s/threads = dependency('threads')/threads = dependency('threads', static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libseccomp = dependency('libseccomp', required: false)/libseccomp = dependency('libseccomp', required: false,static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libselinux = dependency('libselinux', required: false)/libselinux = dependency('libselinux', required: false,static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libapparmor = dependency('libapparmor', required: false)/libapparmor = dependency('libapparmor', required: false,static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libopenssl = dependency('openssl', required: false)/libopenssl = dependency('openssl', required: false,static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libcap = dependency('libcap', required: false)/libcap = dependency('libcap', required: false,static : true)/g" $lxc_source_dir/meson.build
 
-          echo "[built-in options]" >> ~/.local/share/meson/cross/android-aarch64
-          echo "c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']" >> ~/.local/share/meson/cross/android-aarch64
-          echo "c_link_args = ['-Wl,-rpath', '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
-          echo "cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']" >> ~/.local/share/meson/cross/android-aarch64
-          echo "cpp_link_args = ['-Wl,-rpath', '$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/33', '-Wl,--as-needed']" >> ~/.local/share/meson/cross/android-aarch64
+            sed -i "s/liblxc = shared_library(/liblxc = static_library(/g" $lxc_source_dir/meson.build
+            sed -i '/version: liblxc_version,/d' $lxc_source_dir/meson.build
+          else
+            echo "The lxc version $latest_version is not between 5.0.0 and 5.9.9"
+          fi
 
-          echo "[target_machine]" >> ~/.local/share/meson/cross/android-aarch64
-          echo "system = 'linux'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "cpu_family = 'aarch64'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "cpu = 'armv8-a'" >> ~/.local/share/meson/cross/android-aarch64
-          echo "endian = 'little'" >> ~/.local/share/meson/cross/android-aarch64
+      - name: Configure the cross file
+        run: |
+          wget https://musl.cc/aarch64-linux-musl-cross.tgz
+          tar -xf aarch64-linux-musl-cross.tgz
+          
+          # aarch64-linux-gnu
+          cat << EOF >> aarch64-linux-gnu
+          [binaries]
+          c = 'aarch64-linux-gnu-gcc'
+          cpp = 'aarch64-linux-gnu-cpp'
+          ar = 'aarch64-linux-gnu-ar'
+          as = 'aarch64-linux-gnu-as'
+          ld = 'aarch64-linux-gnu-ld'
+          nm = 'aarch64-linux-gnu-nm'
+          strip = 'aarch64-linux-gnu-strip'
+          ranlib = 'aarch64-linux-gnu-ranlib'
+          objcopy = 'aarch64-linux-gnu-objcopy'
+          objdump = 'aarch64-linux-gnu-objdump'
+          pkg-config = '/usr/bin/pkg-config'
+          cmake = '/usr/bin/cmake'
+
+          [built-in options]
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          EOF
+
+          # aarch64-linux-musl
+          cat << EOF >> aarch64-linux-musl
+          [binaries]
+          c = 'aarch64-linux-gnu-gcc'
+          cpp = 'aarch64-linux-gnu-cpp'
+          ar = 'aarch64-linux-gnu-ar'
+          as = 'aarch64-linux-gnu-as'
+          ld = 'aarch64-linux-gnu-ld'
+          nm = 'aarch64-linux-gnu-nm'
+          strip = 'aarch64-linux-gnu-strip'
+          ranlib = 'aarch64-linux-gnu-ranlib'
+          objcopy = 'aarch64-linux-gnu-objcopy'
+          objdump = 'aarch64-linux-gnu-objdump'
+          pkg-config = '/usr/bin/pkg-config'
+          cmake = '/usr/bin/cmake'
+
+          [built-in options]
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          EOF
 
       - name: Check the compilation configuration
         run: |
-          echo C Path:
-          $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android33-clang --version
-          echo PKG-CONFIG Path:
+          echo GNU C Verion:
+          aarch64-linux-gnu-gcc --version
+          echo MUSL C Verion:
+          ~/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc --version
+          echo PKG-CONFIG INFO:
           pkg-config --list-all
           pkg-config --variable pc_path pkg-config
           echo ENV:
           env
-          rm $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/sched.h
-          rm $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/openat2.h
         
       - name: Build lxc
         run: |
           version=$(ls | grep -oP '(?<=lxc-lxc-)[\d.]+')
           cd lxc-lxc-$version
-          wget -O ./71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch https://raw.githubusercontent.com/DreamConnected/lxc-checkconfig/main/71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch
-          patch -N -p1 < 71c6544d1c05eac40b681509f9cc720728ed0dec_105942.patch
           meson setup build -Dprefix=/data/lxc \
                             --default-library=static \
                             -Dinit-script=sysvinit \
                             -Druntime-path=/data/local/tmp \
                             -Dstrip=true \
-                            -Dcapabilities=false \
-                            -Dseccomp=false \
-                            -Dselinux=false \
-                            -Dapparmor=false \
+                            -Dcapabilities=true \
+                            -Dseccomp=true \
+                            -Dselinux=true \
+                            -Dapparmor=true \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var/ \
                             -Dc_link_args="-static" \
-                            --cross-file android-aarch64
+                            --cross-file ../aarch64-linux-gnu
           meson compile -C build
           #make && make install
 

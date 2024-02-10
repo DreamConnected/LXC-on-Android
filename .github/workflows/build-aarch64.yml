@@ -39,12 +39,13 @@ jobs:
           cd ../
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz
+          rm $latest_version.tar.gz
 
       - name: Patch lxc
         run: |
           latest_version=${{ steps.env.outputs.latest_version }}
           lxc_source_dir=${{ steps.env.outputs.lxc_source_dir }}
-          if [[ "$latest_version" > "5.0.0" && "$latest_version" < "5.9.9" ]]; then
+          if [[ "$latest_version" > "lxc-5.0.0" && "$latest_version" < "lxc-5.9.9" ]]; then
             sed -i "s/threads = dependency('threads')/threads = dependency('threads', static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libseccomp = dependency('libseccomp', required: false)/libseccomp = dependency('libseccomp', required: false,static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libselinux = dependency('libselinux', required: false)/libselinux = dependency('libselinux', required: false,static : true)/g" $lxc_source_dir/meson.build
@@ -54,6 +55,8 @@ jobs:
 
             sed -i "s/liblxc = shared_library(/liblxc = static_library(/g" $lxc_source_dir/meson.build
             sed -i '/version: liblxc_version,/d' $lxc_source_dir/meson.build
+
+            echo "The lxc version $latest_version is patch completed"
           else
             echo "The lxc version $latest_version is not between 5.0.0 and 5.9.9"
           fi
@@ -62,6 +65,8 @@ jobs:
         run: |
           wget https://musl.cc/aarch64-linux-musl-cross.tgz
           tar -xzf aarch64-linux-musl-cross.tgz
+          pwd
+          ls -al
           
           # aarch64-linux-gnu
           cat << EOF >> aarch64-linux-gnu

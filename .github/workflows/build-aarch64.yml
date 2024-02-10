@@ -42,6 +42,8 @@ jobs:
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz && mv lxc-$latest_version lxc
           rm $latest_version.tar.gz
+        env:
+          latest_version: ${{ steps.env.outputs.latest_version }}
 
       - name: Patch lxc
         run: |
@@ -149,7 +151,7 @@ jobs:
                             --buildtype release \
                             --cross-file ../aarch64-linux-gnu
           meson compile -C build
-          sudo meson install -C build
+          sudo ninja -C build install 
           sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/$latest_version-gnu-release.tar.gz ."
           sudo rm -rf /data/lxc
 
@@ -175,17 +177,18 @@ jobs:
                             --cross-file ../aarch64-linux-musl \
                             --wipe
           meson compile -C build
-          sudo meson install -C build
+          sudo ninja -C build install
           sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/$latest_version-musl-release.tar.gz ."
+          ls -al ~
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload release file
+        uses: actions/upload-artifact@v3
         with:
-          name: $latest_version-gnu-release
-          path: $latest_version-gnu-release.tar.gz
+          name: ${{ env.latest_version }}-gnu-release
+          path: ~/${{ env.latest_version }}-gnu-release.tar.gz
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload release file
+        uses: actions/upload-artifact@v3
         with:
-          name: $latest_version-musl-release
-          path: $latest_version-musl-release.tar.gz
+          name: ${{ env.latest_version }}-musl-release
+          path: ~/${{ env.latest_version }}-musl-release.tar.gz

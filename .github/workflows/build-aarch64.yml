@@ -156,7 +156,6 @@ jobs:
       - name: Build lxc with musl gcc
         run: |
           cd lxc
-          ls- al ~/output
           latest_version=${{ steps.env.outputs.latest_version }}
           work_dir=${{ steps.env.outputs.work_dir }}
           meson setup build -Dprefix=/data/lxc \

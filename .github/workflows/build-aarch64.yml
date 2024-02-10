@@ -130,6 +130,8 @@ jobs:
         
       - name: Build lxc with GNU gcc
         run: |
+          latest_version=${{ steps.env.outputs.latest_version }}
+          work_dir=${{ steps.env.outputs.work_dir }}
           cd lxc
           meson setup build -Dprefix=/data/lxc \
                             --default-library=static \
@@ -147,15 +149,15 @@ jobs:
                             --buildtype release \
                             --cross-file ../aarch64-linux-gnu
           meson compile -C build
-          meson install -C build
-          latest_version=${{ steps.env.outputs.latest_version }}
-          cd /data/lxc
-          tar -zcvf ~/$latest_version-gnu-release.tar.gz .
-          rm -rf ../lxc
+          sudo meson install -C build
+          sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/$latest_version-gnu-release.tar.gz ."
+          sudo rm -rf /data/lxc
 
       - name: Build lxc with musl gcc
         run: |
           cd lxc
+          latest_version=${{ steps.env.outputs.latest_version }}
+          work_dir=${{ steps.env.outputs.work_dir }}
           meson setup build -Dprefix=/data/lxc \
                             --default-library=static \
                             -Dinit-script=sysvinit \
@@ -173,10 +175,8 @@ jobs:
                             --cross-file ../aarch64-linux-musl \
                             --wipe
           meson compile -C build
-          meson install -C build
-          latest_version=${{ steps.env.outputs.latest_version }}
-          cd /data/lxc
-          tar -zcvf ~/$latest_version-gnu-release.tar.gz .
+          sudo meson install -C build
+          sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/$latest_version-musl-release.tar.gz ."
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2

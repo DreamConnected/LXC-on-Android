@@ -150,7 +150,7 @@ jobs:
                             --cross-file ../aarch64-linux-gnu
           meson compile -C build
           sudo ninja -C build install 
-          sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/output/$latest_version-gnu-release.tar.gz ."
+          sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/$latest_version-gnu-release.tar.gz ."
           sudo rm -rf /data/lxc
 
       - name: Build lxc with musl gcc
@@ -177,10 +177,16 @@ jobs:
                             --wipe
           meson compile -C build
           sudo ninja -C build install
-          sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/output/$latest_version-musl-release.tar.gz ."
+          sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/$latest_version-musl-release.tar.gz ."
 
-      - name: Upload release file
+      - name: Upload GNU release file
         uses: actions/upload-artifact@v3
         with:
-          name: lxc-release-static
-          path: output/*
+          name: ${{ steps.env.outputs.latest_version }}-gnu-release-static
+          path: ${{ steps.env.outputs.latest_version }}-gnu-release.tar.gz
+
+      - name: Upload musl release file
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.env.outputs.latest_version }}-musl-release-static
+          path: ${{ steps.env.outputs.latest_version }}-musl-release.tar.gz

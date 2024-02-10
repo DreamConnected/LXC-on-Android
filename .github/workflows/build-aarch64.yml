@@ -36,6 +36,8 @@ jobs:
           echo "::set-output name=latest_version::$latest_version"
           echo "::set-output name=lxc_source_dir::$lxc_source_dir"
           cd ../
+          work_dir=$(pwd)
+          echo "::set-output name=work_dir::$work_dir"
           rm -rf lxc/
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz && mv lxc-$latest_version lxc
@@ -116,10 +118,11 @@ jobs:
 
       - name: Check the compilation configuration
         run: |
+          work_dir=${{ steps.env.outputs.work_dir }}
           echo GNU C Verion:
-          aarch64-linux-gnu-gcc --version
+          aarch64-linux-gnu-gcc -v
           echo MUSL C Verion:
-          ~/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc --version
+          $work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc -v
           echo PKG-CONFIG INFO:
           pkg-config --list-all
           pkg-config --variable pc_path pkg-config

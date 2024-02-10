@@ -82,7 +82,7 @@ jobs:
           ranlib = 'aarch64-linux-gnu-ranlib'
           objcopy = 'aarch64-linux-gnu-objcopy'
           objdump = 'aarch64-linux-gnu-objdump'
-          pkgconfig = '/usr/bin/pkg-config'
+          pkg-config = '/usr/bin/pkg-config'
           cmake = '/usr/bin/cmake'
 
           [built-in options]
@@ -105,7 +105,7 @@ jobs:
           ranlib = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-ranlib'
           objcopy = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-objcopy'
           objdump = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-objdump'
-          pkgconfig = '/usr/bin/pkg-config'
+          pkg-config = '/usr/bin/pkg-config'
           cmake = '/usr/bin/cmake'
 
           [built-in options]

@@ -65,10 +65,9 @@ jobs:
 
       - name: Configure the cross file
         run: |
+          work_dir=${{ steps.env.outputs.work_dir }}
           wget https://musl.cc/aarch64-linux-musl-cross.tgz
           tar -xzf aarch64-linux-musl-cross.tgz
-          pwd
-          ls -al
           
           # aarch64-linux-gnu
           cat << EOF >> aarch64-linux-gnu
@@ -83,7 +82,7 @@ jobs:
           ranlib = 'aarch64-linux-gnu-ranlib'
           objcopy = 'aarch64-linux-gnu-objcopy'
           objdump = 'aarch64-linux-gnu-objdump'
-          pkg-config = '/usr/bin/pkg-config'
+          pkgconfig = '/usr/bin/pkg-config'
           cmake = '/usr/bin/cmake'
 
           [built-in options]
@@ -96,17 +95,17 @@ jobs:
           # aarch64-linux-musl
           cat << EOF >> aarch64-linux-musl
           [binaries]
-          c = 'aarch64-linux-gnu-gcc'
-          cpp = 'aarch64-linux-gnu-cpp'
-          ar = 'aarch64-linux-gnu-ar'
-          as = 'aarch64-linux-gnu-as'
-          ld = 'aarch64-linux-gnu-ld'
-          nm = 'aarch64-linux-gnu-nm'
-          strip = 'aarch64-linux-gnu-strip'
-          ranlib = 'aarch64-linux-gnu-ranlib'
-          objcopy = 'aarch64-linux-gnu-objcopy'
-          objdump = 'aarch64-linux-gnu-objdump'
-          pkg-config = '/usr/bin/pkg-config'
+          c = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc'
+          cpp = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-cpp'
+          ar = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-ar'
+          as = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-as'
+          ld = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-ld'
+          nm = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-nm'
+          strip = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip'
+          ranlib = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-ranlib'
+          objcopy = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-objcopy'
+          objdump = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-objdump'
+          pkgconfig = '/usr/bin/pkg-config'
           cmake = '/usr/bin/cmake'
 
           [built-in options]
@@ -121,15 +120,15 @@ jobs:
           work_dir=${{ steps.env.outputs.work_dir }}
           echo GNU C Verion:
           aarch64-linux-gnu-gcc -v
+          echo
           echo MUSL C Verion:
           $work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc -v
+          echo
           echo PKG-CONFIG INFO:
           pkg-config --list-all
           pkg-config --variable pc_path pkg-config
-          echo ENV:
-          env
         
-      - name: Build lxc
+      - name: Build lxc with GNU gcc
         run: |
           cd lxc
           meson setup build -Dprefix=/data/lxc \
@@ -145,19 +144,48 @@ jobs:
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var/ \
                             -Dc_link_args="-static" \
+                            --buildtype release
                             --cross-file ../aarch64-linux-gnu
           meson compile -C build
-          #make && make install
+          meson install -C build
+          latest_version=${{ steps.env.outputs.latest_version }}
+          cd /data/lxc
+          tar -zcvf ~/$latest_version-gnu-release.tar.gz .
+          rm -rf ../lxc
 
-      - name: Zip lxc
+      - name: Build lxc with musl gcc
         run: |
-          cd lxc_install
-          lxc_version=$(lxc/lxc --version | cut -d" " -f2)
-          tar -czvf lxc_$lxc_version.tar.gz *
-          mv lxc_$lxc_version.tar.gz ${{ github.workspace }}/lxc_$lxc_version.tar.gz
+          cd lxc
+          meson setup build -Dprefix=/data/lxc \
+                            --default-library=static \
+                            -Dinit-script=sysvinit \
+                            -Druntime-path=/data/local/tmp \
+                            -Dstrip=true \
+                            -Dcapabilities=true \
+                            -Dseccomp=true \
+                            -Dselinux=true \
+                            -Dapparmor=true \
+                            -Dlog-path=/data/lxc/var/log/lxc \
+                            -Ddata-path=/data/lxc/lib/lxc \
+                            --localstatedir=/data/lxc/var/ \
+                            -Dc_link_args="-static" \
+                            --buildtype release
+                            --cross-file ../aarch64-linux-musl \
+                            --wipe
+          meson compile -C build
+          meson install -C build
+          latest_version=${{ steps.env.outputs.latest_version }}
+          cd /data/lxc
+          tar -zcvf ~/$latest_version-gnu-release.tar.gz .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: lxc
-          path: lxc_$lxc_version.tar.gz
+          name: $latest_version-gnu-release
+          path: $latest_version-gnu-release.tar.gz
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: $latest_version-musl-release
+          path: $latest_version-musl-release.tar.gz

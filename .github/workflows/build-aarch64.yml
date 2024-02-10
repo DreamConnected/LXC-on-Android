@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -27,6 +26,7 @@ jobs:
              sudo apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
 
       - name: Get latest lxc version
+        id: env
         run: |
           git clone https://github.com/lxc/lxc.git
           cd lxc
@@ -37,12 +37,11 @@ jobs:
           cd ../
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz
-        env:
-          latest_version: ${{ steps.step.outputs.latest_version }}
-          lxc_source_dir: ${{ steps.step.outputs.lxc_source_dir }} 
 
       - name: Patch lxc
         run: |
+          latest_version=${{ steps.env.outputs.latest_version }}
+          lxc_source_dir=${{ steps.env.outputs.lxc_source_dir }}
           if [[ "$latest_version" > "5.0.0" && "$latest_version" < "5.9.9" ]]; then
             sed -i "s/threads = dependency('threads')/threads = dependency('threads', static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libseccomp = dependency('libseccomp', required: false)/libseccomp = dependency('libseccomp', required: false,static : true)/g" $lxc_source_dir/meson.build
@@ -61,7 +60,7 @@ jobs:
         run: |
           wget https://musl.cc/aarch64-linux-musl-cross.tgz
           tar -xzf aarch64-linux-musl-cross.tgz
-          ll
+          ls -al
           
           # aarch64-linux-gnu
           cat << EOF >> aarch64-linux-gnu

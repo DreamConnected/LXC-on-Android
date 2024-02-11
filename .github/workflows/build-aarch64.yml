@@ -19,9 +19,9 @@ jobs:
                   busybox-static clang cloud-image-utils curl dbus debhelper debootstrap \
                   devscripts dnsmasq-base docbook2x doxygen ed fakeroot file gcc cmake graphviz \
                   git iptables meson net-tools libapparmor-dev libcap-dev libgnutls28-dev liblua5.2-dev \
-                  libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev \
-                  llvm lsb-release make openssl pkg-config python3-all-dev \
-                  python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime \
+                  libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev libpam-dev \
+                  llvm lsb-release make openssl pkg-config python3-all-dev liburing-dev libpthread-stubs0-dev \
+                  python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime systemd libutil-dev \
                   wget xz-utils systemd-coredump libdbus-1-dev libsystemd-dev gcc-aarch64-linux-gnu
              sudo apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
 
@@ -128,11 +128,8 @@ jobs:
           ar = '$ndk_dir/llvm-ar'
           as = '$ndk_dir/llvm-as'
           ld = '$ndk_dir/ld'
-          nm = '$ndk_dir/llvm-nm'
           strip = '$ndk_dir/llvm-strip'
           ranlib = '$ndk_dir/llvm-ranlib'
-          objcopy = '$ndk_dir/llvm-objcopy'
-          objdump = '$ndk_dir/llvm-objdump'
           pkg-config = '/usr/bin/pkg-config'
           cmake = '/usr/bin/cmake'
 
@@ -179,7 +176,7 @@ jobs:
                             -Dapparmor=true \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
-                            --localstatedir=/data/lxc/var/ \
+                            --localstatedir=/data/lxc/var \
                             -Dc_link_args="-static" \
                             --buildtype release \
                             --cross-file ../aarch64-linux-gnu
@@ -204,7 +201,7 @@ jobs:
                             -Dapparmor=true \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
-                            --localstatedir=/data/lxc/var/ \
+                            --localstatedir=/data/lxc/var \
                             -Dc_link_args="-static" \
                             --buildtype release \
                             --cross-file ../aarch64-linux-musl \
@@ -239,14 +236,14 @@ jobs:
                             -Dinit-script=sysvinit \
                             -Druntime-path=/data/local/tmp \
                             -Dstrip=true \
-                            -Dcapabilities=false \
-                            -Dseccomp=false \
-                            -Dselinux=false \
-                            -Dapparmor=false \
+                            -Dcapabilities=true \
+                            -Dseccomp=true \
+                            -Dselinux=true \
+                            -Dapparmor=true \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
-                            --localstatedir=/data/lxc/var/ \
-                            -Dc_link_args="-shared" \
+                            --localstatedir=/data/lxc/var \
+                            -Dc_link_args="-fPIC" \
                             --buildtype release \
                             --cross-file ../aarch64-NDK-API26 \
                             --wipe

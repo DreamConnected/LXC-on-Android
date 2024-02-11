@@ -1,0 +1,56 @@
+diff -uprN ../lxc-source/src/lxc/open_utils.h src/lxc/open_utils.h
+--- ../lxc-source/src/lxc/open_utils.h	2024-02-11 04:24:36.445225356 +0000
++++ src/lxc/open_utils.h	2024-02-11 05:55:14.778199982 +0000
+@@ -19,13 +19,13 @@
+  * @mode: O_CREAT/O_TMPFILE file mode.
+  * @resolve: RESOLVE_* flags.
+  */
+-/*#if !HAVE_STRUCT_OPEN_HOW
++#if !HAVE_STRUCT_OPEN_HOW
+ struct open_how {
+ 	__u64 flags;
+ 	__u64 mode;
+ 	__u64 resolve;
+ };
+-#endif*/
++#endif
+ 
+ /* how->resolve flags for openat2(2). */
+ #ifndef RESOLVE_NO_XDEV
+diff -uprN ../lxc-source/src/lxc/process_utils.h src/lxc/process_utils.h
+--- ../lxc-source/src/lxc/process_utils.h	2024-02-11 04:23:45.963837826 +0000
++++ src/lxc/process_utils.h	2024-02-11 05:55:14.778199982 +0000
+@@ -164,7 +164,7 @@
+ #define u64_to_ptr(x) ((void *)(uintptr_t)x)
+ #endif
+ 
+-/*#if !HAVE_STRUCT_CLONE_ARGS
++#if !HAVE_STRUCT_CLONE_ARGS
+ struct clone_args {
+ 	__aligned_u64 flags;
+ 	__aligned_u64 pidfd;
+@@ -178,7 +178,7 @@ struct clone_args {
+ 	__aligned_u64 set_tid_size;
+ 	__aligned_u64 cgroup;
+ };
+-#endif*/
++#endif
+ 
+ __returns_twice static inline pid_t lxc_clone3(struct clone_args *args, size_t size)
+ {
+diff -uprN ../lxc-source/src/lxc/rexec.c src/lxc/rexec.c
+--- ../lxc-source/src/lxc/rexec.c	2024-02-11 04:26:10.315805482 +0000
++++ src/lxc/rexec.c	2024-02-11 05:55:14.778199982 +0000
+@@ -16,10 +16,9 @@
+ #include "string_utils.h"
+ #include "syscall_wrappers.h"
+ 
++#if IS_BIONIC && !HAVE_FEXECVE
+ #include "fexecve.h"
+-/*#if IS_BIONIC && !HAVE_FEXECVE
+-#include "fexecve.h"
+-#endif*/
++#endif
+ 
+ #define LXC_MEMFD_REXEC_SEALS \
+ 	(F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE)

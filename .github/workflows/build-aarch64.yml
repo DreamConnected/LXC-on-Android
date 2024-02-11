@@ -180,7 +180,7 @@ jobs:
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \
-                            -Dc_link_args="-static" \
+                            -Dc_link_args="-static -I/usr/aarch64-linux-gnu/include" \
                             --buildtype release \
                             --cross-file ../aarch64-linux-gnu
           meson compile -C build

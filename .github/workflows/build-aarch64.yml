@@ -220,8 +220,8 @@ jobs:
         run: |
           work_dir=${{ steps.env.outputs.work_dir }}
           mv ndk.patch lxc/
-          apt remove -y -qq meson
-          apt install -y -qq pipx
+          sudo apt remove -y -qq meson
+          sudo apt install -y -qq pipx
           pipx install meson
           PATH=$work_dir/.local/bin:$PATH
           cd lxc

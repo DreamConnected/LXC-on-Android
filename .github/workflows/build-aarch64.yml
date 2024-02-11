@@ -218,6 +218,14 @@ jobs:
 
       - name: Build lxc with NDK r26b Android API 26
         run: |
+          git clone https://github.com/lxc/lxc.git
+          cd lxc
+          latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+          cd ../
+          rm -rf lxc/
+          wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
+          tar -zxvf $latest_version.tar.gz && mv lxc-$latest_version lxc
+          rm $latest_version.tar.gz
           work_dir=${{ steps.env.outputs.work_dir }}
           mv ndk.patch lxc/
           sudo apt remove -y -qq meson

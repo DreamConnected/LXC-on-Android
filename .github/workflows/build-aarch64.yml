@@ -180,7 +180,7 @@ jobs:
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \
-                            -Dc_link_args="-static -I/usr/aarch64-linux-gnu/include" \
+                            -Dc_link_args="-static" \
                             --buildtype release \
                             --cross-file ../aarch64-linux-gnu
           meson compile -C build
@@ -248,7 +248,7 @@ jobs:
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \
-                            -Dc_link_args="-fPIC" \
+                            -Dc_link_args="-fPIC -I/usr/aarch64-linux-gnu/include" \
                             --buildtype release \
                             --cross-file ../aarch64-NDK-API26 \
                             --wipe

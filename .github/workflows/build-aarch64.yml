@@ -130,12 +130,14 @@ jobs:
           ld = '$ndk_dir/ld'
           strip = '$ndk_dir/llvm-strip'
           ranlib = '$ndk_dir/llvm-ranlib'
-          pkg-config = '/usr/bin/pkg-config'
+          pk-gconfig = '/usr/bin/pkg-config'
           cmake = '/usr/bin/cmake'
 
           [built-in options]
-          c_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L']
-          cpp_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L']
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '--sysroot=$work_dir /android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '--sysroot=$work_dir /android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot']
           
           [target_machine]
           system = 'linux'
@@ -161,6 +163,7 @@ jobs:
           pkg-config --variable pc_path pkg-config
         
       - name: Build lxc with GNU gcc
+        if: false
         run: |
           latest_version=${{ steps.env.outputs.latest_version }}
           work_dir=${{ steps.env.outputs.work_dir }}
@@ -186,6 +189,7 @@ jobs:
           sudo ninja -C build uninstall 
 
       - name: Build lxc with musl gcc
+        if: false
         run: |
           cd lxc
           latest_version=${{ steps.env.outputs.latest_version }}
@@ -236,6 +240,7 @@ jobs:
                             -Dinit-script=sysvinit \
                             -Druntime-path=/data/local/tmp \
                             -Dstrip=true \
+                            -Dd_lto-true \
                             -Dcapabilities=true \
                             -Dseccomp=true \
                             -Dselinux=true \

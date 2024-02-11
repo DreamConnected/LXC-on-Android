@@ -240,7 +240,7 @@ jobs:
                             -Dinit-script=sysvinit \
                             -Druntime-path=/data/local/tmp \
                             -Dstrip=true \
-                            -Dd_lto-true \
+                            -Dd_lto=true \
                             -Dcapabilities=true \
                             -Dseccomp=true \
                             -Dselinux=true \

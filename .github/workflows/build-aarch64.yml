@@ -135,9 +135,9 @@ jobs:
 
           [built-in options]
           c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '-I-I/usr/aarch64-linux-gnu']
+          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '-I/usr/aarch64-linux-gnu']
           cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '-I-I/usr/aarch64-linux-gnu']
+          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '-I/usr/aarch64-linux-gnu']
           
           [target_machine]
           system = 'linux'
@@ -248,7 +248,7 @@ jobs:
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \
-                            -Dc_link_args="-fPIC -I-I/usr/aarch64-linux-gnu" \
+                            -Dc_link_args="-fPIC -I/usr/aarch64-linux-gnu" \
                             --buildtype release \
                             --cross-file ../aarch64-NDK-API26 \
                             --wipe

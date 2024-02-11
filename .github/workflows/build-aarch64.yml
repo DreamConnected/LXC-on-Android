@@ -218,6 +218,7 @@ jobs:
 
       - name: Build lxc with NDK r26b Android API 26
         run: |
+          rm -rf lxc/
           git clone https://github.com/lxc/lxc.git
           cd lxc
           latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)

@@ -225,7 +225,7 @@ jobs:
           pipx install meson
           PATH=$work_dir/.local/bin:$PATH
           cd lxc
-          patch -p1 < ndk.patch
+          patch -p0 -R < ndk.patch
           latest_version=${{ steps.env.outputs.latest_version }}
           meson setup build -Dprefix=/data/lxc \
                             --default-library=shared \

@@ -135,9 +135,9 @@ jobs:
 
           [built-in options]
           c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '--sysroot=$work_dir /android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot']
+          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '--sysroot=$work_dir /android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot', '-I/usr/include/x86_64-linux-gnu']
           cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '--sysroot=$work_dir /android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot']
+          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '--sysroot=$work_dir /android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot', '-I/usr/include/x86_64-linux-gnu']
           
           [target_machine]
           system = 'linux'

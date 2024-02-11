@@ -137,10 +137,8 @@ jobs:
           cmake = '/usr/bin/cmake'
 
           [built-in options]
-          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
-          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          c_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L']
+          cpp_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L']
           
           [target_machine]
           system = 'linux'
@@ -241,10 +239,10 @@ jobs:
                             -Dinit-script=sysvinit \
                             -Druntime-path=/data/local/tmp \
                             -Dstrip=true \
-                            -Dcapabilities=true \
-                            -Dseccomp=true \
-                            -Dselinux=true \
-                            -Dapparmor=true \
+                            -Dcapabilities=false \
+                            -Dseccomp=false \
+                            -Dselinux=false \
+                            -Dapparmor=false \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var/ \

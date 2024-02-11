@@ -21,7 +21,7 @@ jobs:
                   git iptables meson net-tools libapparmor-dev libcap-dev libgnutls28-dev liblua5.2-dev \
                   libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev libpam-dev \
                   llvm lsb-release make openssl pkg-config python3-all-dev liburing-dev libpthread-stubs0-dev \
-                  python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime systemd libutil-dev \
+                  python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime systemd \
                   wget xz-utils systemd-coredump libdbus-1-dev libsystemd-dev gcc-aarch64-linux-gnu
              sudo apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
 

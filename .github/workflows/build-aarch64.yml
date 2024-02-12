@@ -42,12 +42,10 @@ jobs:
           rm -rf lxc/
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz && mv lxc-$latest_version lxc
-          rm $latest_version.tar.gz
           wget https://googledownloads.cn/android/repository/android-ndk-r26b-linux.zip
-          unzip android-ndk-r26b-linux.zip
+          unzip -q android-ndk-r26b-linux.zip
           ndk_dir=$(pwd)/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin
           echo "::set-output name=ndk_dir::$ndk_dir"
-          find / | grep bits/wordsize.h
 
       - name: Patch lxc
         run: |
@@ -218,12 +216,7 @@ jobs:
       - name: Build lxc with NDK r26b Android API 26
         run: |
           rm -rf lxc/
-          git clone https://github.com/lxc/lxc.git
-          cd lxc
-          latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
-          cd ../
-          rm -rf lxc/
-          wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
+          latest_version=${{ steps.env.outputs.latest_version }}
           tar -zxvf $latest_version.tar.gz && mv lxc-$latest_version lxc
           rm $latest_version.tar.gz
           work_dir=${{ steps.env.outputs.work_dir }}
@@ -234,11 +227,7 @@ jobs:
           PATH=$work_dir/.local/bin:$PATH
           cd lxc
           patch -p0 -R < ndk.patch
-          export C_INCLUDE_PATH=/usr/include:/usr/local/include:/usr/include/x86_64-linux-gnu:/usr/aarch64-linux-gnu/include:$C_INCLUDE_PATH
-          export CPLUS_INCLUDE_PATH=/usr/include:/usr/local/include:/usr/include/x86_64-linux-gnu:/usr/aarch64-linux-gnu/include:$CPLUS_INCLUDE_PATH
-          latest_version=${{ steps.env.outputs.latest_version }}
           meson setup build -Dprefix=/data/lxc \
-                            --default-library=shared \
                             -Dinit-script=sysvinit \
                             -Druntime-path=/data/local/tmp \
                             -Dstrip=true \
@@ -250,7 +239,6 @@ jobs:
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \
-                            -Dc_link_args="-fPIC" \
                             --buildtype release \
                             --cross-file ../aarch64-NDK-API26 \
                             --wipe

@@ -241,7 +241,6 @@ jobs:
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \
-                            -Dc_link_args="-fPIC" \
                             --buildtype release \
                             --cross-file ../aarch64-NDK-API26 \
                             --wipe

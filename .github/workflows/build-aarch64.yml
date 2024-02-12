@@ -134,10 +134,10 @@ jobs:
           cmake = '/usr/bin/cmake'
 
           [built-in options]
-          c_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L', '-I/usr/include', '-I/usr/include/x86_64-linux-gnu']
-          c_link_args = ['-I/usr/include', '-I/usr/include/x86_64-linux-gnu']
-          cpp_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L', '-I/usr/include', '-I/usr/include/x86_64-linux-gnu']
-          cpp_link_args = ['-I/usr/include', '-I/usr/include/x86_64-linux-gnu']
+          c_args = ['-I/usr/include', '-I/usr/aarch64-linux-gnu/include','-I/usr/include/x86_64-linux-gnu']
+          c_link_args = ['-I/usr/include', '-I/usr/aarch64-linux-gnu/include', '-I/usr/include/x86_64-linux-gnu']
+          cpp_args = ['-I/usr/include', '-I/usr/aarch64-linux-gnu/include', '-I/usr/include/x86_64-linux-gnu']
+          cpp_link_args = ['-I/usr/include', '-I/usr/aarch64-linux-gnu/include', '-I/usr/include/x86_64-linux-gnu']
 
           [target_machine]
           system = 'linux'

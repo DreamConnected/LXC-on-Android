@@ -17,7 +17,7 @@ jobs:
              sudo apt-get install -qq --yes \
                   apparmor bash-completion bridge-utils build-essential \
                   busybox-static clang cloud-image-utils curl dbus debhelper debootstrap \
-                  devscripts dnsmasq-base docbook2x doxygen ed fakeroot file gcc cmake graphviz \
+                  devscripts dnsmasq-base docbook2x doxygen ed fakeroot file gcc-12 g++-12 cmake graphviz \
                   git iptables meson net-tools libapparmor-dev libcap-dev libgnutls28-dev liblua5.2-dev \
                   libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev libpam-dev \
                   llvm lsb-release make openssl pkg-config python3-all-dev liburing-dev libpthread-stubs0-dev \

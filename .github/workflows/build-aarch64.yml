@@ -134,10 +134,10 @@ jobs:
           cmake = '/usr/bin/cmake'
 
           [built-in options]
-          c_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L', '-I$work_dir/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include']
-          c_link_args = ['-I$work_dir/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include']
-          cpp_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L', '-I$work_dir/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include']
-          cpp_link_args = ['-I$work_dir/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include']
+          c_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L', '-I/usr/include']
+          c_link_args = ['-I/usr/include']
+          cpp_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L', '-I/usr/include']
+          cpp_link_args = ['-I/usr/include']
 
           [target_machine]
           system = 'linux'

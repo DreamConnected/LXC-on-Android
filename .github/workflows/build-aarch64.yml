@@ -46,6 +46,7 @@ jobs:
           unzip android-ndk-r26b-linux.zip
           ndk_dir=$(pwd)/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin
           echo "::set-output name=ndk_dir::$ndk_dir"
+          find / | grep bits/wordsize.h
 
       - name: Patch lxc
         run: |

@@ -132,10 +132,18 @@ jobs:
           ld = '$ndk_dir/ld'
           strip = '$ndk_dir/llvm-strip'
           ranlib = '$ndk_dir/llvm-ranlib'
-          pk-gconfig = '/usr/bin/pkg-config'
+          pkg-config = '/usr/bin/pkg-config'
           cmake = '/usr/bin/cmake'
 
-          
+          [built-in options]
+          c_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L']
+          cpp_args = ['-fPIC', '-D_POSIX_C_SOURCE=200809L']
+
+          [target_machine]
+          system = 'linux'
+          cpu_family = 'aarch64'
+          cpu = 'aarch64'
+          endian = 'little'
           EOF
 
       - name: Check the compilation configuration
@@ -226,6 +234,8 @@ jobs:
           PATH=$work_dir/.local/bin:$PATH
           cd lxc
           patch -p0 -R < ndk.patch
+          export C_INCLUDE_PATH=/usr/include:/usr/local/include:/usr/include/x86_64-linux-gnu:/usr/aarch64-linux-gnu/include:$C_INCLUDE_PATH
+          export CPLUS_INCLUDE_PATH=/usr/include:/usr/local/include:/usr/include/x86_64-linux-gnu:/usr/aarch64-linux-gnu/include:$CPLUS_INCLUDE_PATH
           latest_version=${{ steps.env.outputs.latest_version }}
           meson setup build -Dprefix=/data/lxc \
                             --default-library=shared \

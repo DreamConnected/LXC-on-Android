@@ -139,12 +139,6 @@ jobs:
           c_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '-I/usr/include/x86_64-linux-gnu']
           cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
           cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed', '-I/usr/include/x86_64-linux-gnu']
-          
-          [target_machine]
-          system = 'linux'
-          cpu_family = 'aarch64'
-          cpu = 'aarch64'
-          endian = 'little'
           EOF
 
       - name: Check the compilation configuration
@@ -249,8 +243,7 @@ jobs:
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \
-                            -Dc_link_args="-fPIC -I/usr/include/x86_64-linux-gnu" \
-                            -Dcpp_link_args="-fPIC -I/usr/include/x86_64-linux-gnu" \
+                            -Dc_link_args="-fPIC" \
                             --buildtype release \
                             --cross-file ../aarch64-NDK-API26 \
                             --wipe

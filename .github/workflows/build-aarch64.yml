@@ -231,8 +231,8 @@ jobs:
                             -Dd_lto=true \
                             -Dcapabilities=false \
                             -Dseccomp=false \
-                            -Dselinux=true \
-                            -Dapparmor=true \
+                            -Dselinux=false \
+                            -Dapparmor=false \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \

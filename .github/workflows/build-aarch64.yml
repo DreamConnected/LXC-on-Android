@@ -229,7 +229,7 @@ jobs:
                             -Druntime-path=/data/local/tmp \
                             -Dstrip=true \
                             -Dd_lto=true \
-                            -Dcapabilities=true \
+                            -Dcapabilities=false \
                             -Dseccomp=false \
                             -Dselinux=true \
                             -Dapparmor=true \

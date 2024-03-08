@@ -233,6 +233,7 @@ jobs:
                             -Dseccomp=false \
                             -Dselinux=false \
                             -Dapparmor=false \
+                            -Dopenssl=false \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \

@@ -126,7 +126,7 @@ jobs:
           c = '$ndk_dir/aarch64-linux-android26-clang'
           cpp = '$ndk_dir/aarch64-linux-android26-clang++'
           ar = '$ndk_dir/llvm-ar'
-          as = '$ndk_dir/llvm-as'
+          as = '$ndk_dir/aarch64-linux-android26-clang'
           ld = '$ndk_dir/ld'
           strip = '$ndk_dir/llvm-strip'
           ranlib = '$ndk_dir/llvm-ranlib'
@@ -138,12 +138,6 @@ jobs:
           c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
           cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
           cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
-
-          [target_machine]
-          system = 'linux'
-          cpu_family = 'aarch64'
-          cpu = 'aarch64'
-          endian = 'little'
           EOF
 
       - name: Check the compilation configuration
@@ -236,7 +230,7 @@ jobs:
                             -Dstrip=true \
                             -Dd_lto=true \
                             -Dcapabilities=true \
-                            -Dseccomp=true \
+                            -Dseccomp=false \
                             -Dselinux=true \
                             -Dapparmor=true \
                             -Dlog-path=/data/lxc/var/log/lxc \

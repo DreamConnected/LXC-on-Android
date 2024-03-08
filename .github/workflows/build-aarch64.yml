@@ -157,7 +157,7 @@ jobs:
           pkg-config --variable pc_path pkg-config
         
       - name: Build lxc with GNU gcc
-        if: false
+        if: true
         run: |
           latest_version=${{ steps.env.outputs.latest_version }}
           work_dir=${{ steps.env.outputs.work_dir }}
@@ -183,7 +183,7 @@ jobs:
           sudo ninja -C build uninstall 
 
       - name: Build lxc with musl gcc
-        if: false
+        if: true
         run: |
           cd lxc
           latest_version=${{ steps.env.outputs.latest_version }}
@@ -217,8 +217,7 @@ jobs:
           rm $latest_version.tar.gz
           work_dir=${{ steps.env.outputs.work_dir }}
           mv ndk.patch lxc/
-          sudo apt remove -y -qq meson gcc-aarch64-linux-gnu
-          sudo apt autoremove
+          sudo apt remove -y -qq meson
           sudo apt install -y -qq pipx
           pipx install meson
           PATH=$work_dir/.local/bin:$PATH

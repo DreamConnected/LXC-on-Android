@@ -134,10 +134,10 @@ jobs:
           cmake = '/usr/bin/cmake'
 
           [built-in options]
-          c_args = ['-I/usr/include', '-I/usr/aarch64-linux-gnu/include','-I/usr/include/x86_64-linux-gnu']
-          c_link_args = ['-I/usr/include', '-I/usr/aarch64-linux-gnu/include', '-I/usr/include/x86_64-linux-gnu']
-          cpp_args = ['-I/usr/include', '-I/usr/aarch64-linux-gnu/include', '-I/usr/include/x86_64-linux-gnu']
-          cpp_link_args = ['-I/usr/include', '-I/usr/aarch64-linux-gnu/include', '-I/usr/include/x86_64-linux-gnu']
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
 
           [target_machine]
           system = 'linux'
@@ -223,7 +223,8 @@ jobs:
           rm $latest_version.tar.gz
           work_dir=${{ steps.env.outputs.work_dir }}
           mv ndk.patch lxc/
-          sudo apt remove -y -qq meson
+          sudo apt remove -y -qq meson gcc-aarch64-linux-gnu
+          sudo apt autoremove
           sudo apt install -y -qq pipx
           pipx install meson
           PATH=$work_dir/.local/bin:$PATH

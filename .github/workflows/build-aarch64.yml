@@ -34,18 +34,18 @@ jobs:
           lxc_source_dir=$(pwd)
           latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
           echo "Latest lxc version: $latest_version"
-          echo "::set-output name=latest_version::$latest_version"
-          echo "::set-output name=lxc_source_dir::$lxc_source_dir"
+          echo "latest_version=$latest_version" >> $GITHUB_OUTPUT
+          echo "lxc_source_dir=$lxc_source_dir" >> $GITHUB_OUTPUT
           cd ../
           work_dir=$(pwd)
-          echo "::set-output name=work_dir::$work_dir"
+          echo "work_dir=$work_dir" >> $GITHUB_OUTPUT
           rm -rf lxc/
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
           tar -zxvf $latest_version.tar.gz && mv lxc-$latest_version lxc
           wget https://googledownloads.cn/android/repository/android-ndk-r26b-linux.zip
           unzip -q android-ndk-r26b-linux.zip
           ndk_dir=$(pwd)/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin
-          echo "::set-output name=ndk_dir::$ndk_dir"
+          echo "ndk_dir::$ndk_dir" >> $GITHUB_OUTPUT
 
       - name: Patch lxc
         run: |
@@ -134,10 +134,10 @@ jobs:
           cmake = '/usr/bin/cmake'
 
           [built-in options]
-          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
-          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          c_args = ['-O2', '-pipe', '-feliminate-unused-debug-types']
+          c_link_args = ['-Wl,-rpath,/data/lxc/lib']
+          cpp_args = ['-O2', '-pipe', '-feliminate-unused-debug-types']
+          cpp_link_args = ['-Wl,-rpath,/data/lxc/lib']
           EOF
 
       - name: Check the compilation configuration

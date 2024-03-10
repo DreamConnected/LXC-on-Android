@@ -135,9 +135,7 @@ jobs:
 
           [built-in options]
           c_args = ['-O2', '-pipe', '-feliminate-unused-debug-types']
-          c_link_args = ['-Wl,-rpath,/data/lxc/lib']
           cpp_args = ['-O2', '-pipe', '-feliminate-unused-debug-types']
-          cpp_link_args = ['-Wl,-rpath,/data/lxc/lib']
           EOF
 
       - name: Check the compilation configuration

@@ -134,8 +134,10 @@ jobs:
           cmake = '/usr/bin/cmake'
 
           [built-in options]
-          c_args = ['-O2', '-pipe', '-feliminate-unused-debug-types']
-          cpp_args = ['-O2', '-pipe', '-feliminate-unused-debug-types']
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          c_link_args = ['-Wl,-rpath']
+          cpp_link_args = ['-Wl,-rpath']
           EOF
 
       - name: Check the compilation configuration

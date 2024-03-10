@@ -45,7 +45,7 @@ jobs:
           wget https://googledownloads.cn/android/repository/android-ndk-r26b-linux.zip
           unzip -q android-ndk-r26b-linux.zip
           ndk_dir=$(pwd)/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin
-          echo "ndk_dir::$ndk_dir" >> $GITHUB_OUTPUT
+          echo "ndk_dir=$ndk_dir" >> $GITHUB_OUTPUT
 
       - name: Patch lxc
         run: |

@@ -164,7 +164,7 @@ jobs:
           pkg-config --variable pc_path pkg-config
         
       - name: Build lxc with GNU gcc
-        if: true
+        if: false
         run: |
           latest_version=${{ steps.env.outputs.latest_version }}
           work_dir=${{ steps.env.outputs.work_dir }}

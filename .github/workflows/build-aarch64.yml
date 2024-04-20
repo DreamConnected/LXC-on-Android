@@ -35,6 +35,10 @@ jobs:
           lxc_source_dir=$(pwd)
           latest_version=$(git describe --tags `git rev-list --tags --max-count=1`)
           echo "Latest lxc version: $latest_version"
+          # For 6.0.0 and later.
+          source_version=$(echo "$latest_version" | sed 's/^v//')
+          echo "source_version=$source_version" >> $GITHUB_OUTPUT
+          #
           echo "latest_version=$latest_version" >> $GITHUB_OUTPUT
           echo "lxc_source_dir=$lxc_source_dir" >> $GITHUB_OUTPUT
           cd ../
@@ -42,7 +46,7 @@ jobs:
           echo "work_dir=$work_dir" >> $GITHUB_OUTPUT
           rm -rf lxc/
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_version.tar.gz
-          tar -zxvf $latest_version.tar.gz && mv lxc-$latest_version lxc
+          tar -zxvf $latest_version.tar.gz && mv lxc-$source_version lxc
           wget https://googledownloads.cn/android/repository/android-ndk-r26b-linux.zip
           unzip -q android-ndk-r26b-linux.zip
           ndk_dir=$(pwd)/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin
@@ -50,9 +54,9 @@ jobs:
 
       - name: Patch lxc
         run: |
-          latest_version=${{ steps.env.outputs.latest_version }}
+          source_version=${{ steps.env.outputs.source_version }}
           lxc_source_dir=${{ steps.env.outputs.lxc_source_dir }}
-          if [[ "$latest_version" > "lxc-5.0.0" && "$latest_version" < "lxc-6.9.9" ]]; then
+          if [[ "$source_version" > "5.0.0" && "$source_version" < "6.9.9" ]]; then
             sed -i "s/threads = dependency('threads')/threads = dependency('threads', static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libseccomp = dependency('libseccomp', required: false)/libseccomp = dependency('libseccomp', required: false,static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libselinux = dependency('libselinux', required: false)/libselinux = dependency('libselinux', required: false,static : true)/g" $lxc_source_dir/meson.build
@@ -65,9 +69,9 @@ jobs:
 
             sed -i "s/cpuset.cpus/cpus/g" $lxc_source_dir/src/lxc/cgroups/cgfsng.c
 
-            echo "The lxc version $latest_version is patch completed"
+            echo "The lxc version $source_version is patch completed"
           else
-            echo "The lxc version $latest_version is not between 5.0.0 and 6.9.9"
+            echo "The lxc version $source_version is not between 5.0.0 and 6.9.9"
           fi
 
       - name: Configure the cross file
@@ -216,7 +220,8 @@ jobs:
         run: |
           rm -rf lxc/
           latest_version=${{ steps.env.outputs.latest_version }}
-          tar -zxvf $latest_version.tar.gz && mv lxc-$latest_version lxc
+          source_version=${{ steps.env.outputs.source_version }}
+          tar -zxvf $latest_version.tar.gz && mv lxc-$source_version lxc
           rm $latest_version.tar.gz
           work_dir=${{ steps.env.outputs.work_dir }}
           mv ndk.patch lxc/

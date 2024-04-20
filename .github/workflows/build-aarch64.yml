@@ -2,7 +2,8 @@ name: Build lxc for Android arm64
 
 on:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -51,7 +52,7 @@ jobs:
         run: |
           latest_version=${{ steps.env.outputs.latest_version }}
           lxc_source_dir=${{ steps.env.outputs.lxc_source_dir }}
-          if [[ "$latest_version" > "lxc-5.0.0" && "$latest_version" < "lxc-5.9.9" ]]; then
+          if [[ "$latest_version" > "lxc-5.0.0" && "$latest_version" < "lxc-6.9.9" ]]; then
             sed -i "s/threads = dependency('threads')/threads = dependency('threads', static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libseccomp = dependency('libseccomp', required: false)/libseccomp = dependency('libseccomp', required: false,static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libselinux = dependency('libselinux', required: false)/libselinux = dependency('libselinux', required: false,static : true)/g" $lxc_source_dir/meson.build
@@ -62,9 +63,11 @@ jobs:
             sed -i "s/liblxc = shared_library(/liblxc = static_library(/g" $lxc_source_dir/meson.build
             sed -i '/version: liblxc_version,/d' $lxc_source_dir/meson.build
 
+            sed -i "s/cpuset.cpus/cpus/g" $lxc_source_dir/src/lxc/cgroups/cgfsng.c
+
             echo "The lxc version $latest_version is patch completed"
           else
-            echo "The lxc version $latest_version is not between 5.0.0 and 5.9.9"
+            echo "The lxc version $latest_version is not between 5.0.0 and 6.9.9"
           fi
 
       - name: Configure the cross file
@@ -223,6 +226,7 @@ jobs:
           PATH=$work_dir/.local/bin:$PATH
           cd lxc
           patch -p0 -R < ndk.patch
+          sed -i "s/cpuset.cpus/cpus/g" ./src/lxc/cgroups/cgfsng.c
           meson setup build -Dprefix=/data/lxc \
                             -Dinit-script=sysvinit \
                             -Druntime-path=/data/local/tmp \
@@ -260,3 +264,17 @@ jobs:
         with:
           name: ${{ steps.env.outputs.latest_version }}-ndk-api26-release-shared
           path: ${{ steps.env.outputs.latest_version }}-ndk-api26-release.tar.gz
+
+      - name: Create Release and Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref }}
+          body: TODO New Release.
+          draft: false
+          prerelease: false
+          files: |
+            ${{ steps.env.outputs.latest_version }}-gnu-release.tar.gz
+            ${{ steps.env.outputs.latest_version }}-musl-release.tar.gz
+            ${{ steps.env.outputs.latest_version }}-ndk-api26-release.tar.gz

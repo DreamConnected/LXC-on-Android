@@ -13,16 +13,20 @@ jobs:
 
       - name: Install dependencies
         run: | 
+             echo "deb [arch=arm64] https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ jammy main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
+             echo "deb [arch=arm64] https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ jammy-updates main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
+             echo "deb [arch=arm64] https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ jammy-backports main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
+             sudo dpkg --add-architecture arm64
              sudo apt-get update -qq
              sudo apt-get install -qq --yes \
-                  apparmor bash-completion bridge-utils build-essential \
-                  busybox-static clang cloud-image-utils curl dbus debhelper debootstrap \
+                  apparmor:arm64 bash-completion bridge-utils build-essential \
+                  busybox-static clang cloud-image-utils curl dbus:arm64 debhelper debootstrap \
                   devscripts dnsmasq-base docbook2x doxygen ed fakeroot file gcc-12 g++-12 cmake graphviz \
-                  git iptables net-tools libapparmor-dev libcap-dev libgnutls28-dev liblua5.2-dev \
-                  libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev libpam-dev libssl-dev \
-                  llvm lsb-release make openssl pkg-config python3-all-dev liburing-dev libpthread-stubs0-dev \
-                  python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime systemd ninja-build \
-                  wget xz-utils systemd-coredump libdbus-1-dev libsystemd-dev gcc-aarch64-linux-gnu
+                  git iptables net-tools libapparmor-dev:arm64 libcap-dev:arm64 libgnutls28-dev:arm64 liblua5.2-dev \
+                  libpam0g-dev:arm64 libseccomp-dev:arm64 libselinux1-dev:arm64 libtool linux-libc-dev libpam-dev:arm64 libssl-dev:arm64 \
+                  llvm lsb-release make openssl:arm64 pkg-config python3-all-dev liburing-dev libpthread-stubs0-dev \
+                  python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime systemd:arm64 ninja-build libdbus-1-3:arm64 \
+                  wget xz-utils systemd-coredump:arm64 libdbus-1-dev:arm64 libsystemd-dev:arm64 gcc-aarch64-linux-gnu
              sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 20 --slave /usr/bin/g++ g++ /usr/bin/g++-12
              sudo apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
              sudo apt install -y -qq pipx
@@ -177,8 +181,8 @@ jobs:
                             -Dseccomp=true \
                             -Dselinux=true \
                             -Dapparmor=true \
-                            -Dopenssl=false \
-                            -Ddbus=false \
+                            -Dopenssl=true \
+                            -Ddbus=true \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \

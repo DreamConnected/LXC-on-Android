@@ -96,9 +96,9 @@ jobs:
           cmake = '/usr/bin/cmake'
 
           [built-in options]
-          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types', '-I/usr/include/x86_64-linux-gnu/openssl']
           c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
-          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types', '-I/usr/include/x86_64-linux-gnu/openssl']
           cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
           EOF
 

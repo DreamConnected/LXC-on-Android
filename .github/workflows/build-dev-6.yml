@@ -54,7 +54,7 @@ jobs:
         run: |
           latest_version=${{ steps.env.outputs.latest_version }}
           lxc_source_dir=${{ steps.env.outputs.lxc_source_dir }}
-          if [[ "$latest_version" > "lxc-6.0.0" && "$latest_version" < "lxc-6.9.9" ]]; then
+          if [[ "$latest_version" > "lxc-5.9.9" && "$latest_version" < "lxc-6.9.9" ]]; then
             sed -i "s/threads = dependency('threads')/threads = dependency('threads', static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libseccomp = dependency('libseccomp', required: false)/libseccomp = dependency('libseccomp', required: false,static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libselinux = dependency('libselinux', required: false)/libselinux = dependency('libselinux', required: false,static : true)/g" $lxc_source_dir/meson.build

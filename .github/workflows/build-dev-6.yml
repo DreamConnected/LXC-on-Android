@@ -18,6 +18,10 @@ jobs:
              echo "deb [arch=arm64] https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ jammy-updates main restricted universe multiverse" | sudo tee -a arm64_sources.list
              echo "deb [arch=arm64] https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ jammy-backports main restricted universe multiverse" | sudo tee -a arm64_sources.list
              sudo dpkg --add-architecture arm64
+             sudo dpkg --remove-architecture amd64
+             sudo apt-get update -qq
+             sudo dpkg --remove-architecture arm64
+             sudo dpkg --add-architecture amd64
              sudo apt-get update -qq
              sudo apt-get install -qq --yes \
                   apparmor:arm64 bash-completion bridge-utils build-essential \

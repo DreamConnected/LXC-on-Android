@@ -13,7 +13,7 @@ jobs:
 
       - name: Install dependencies
         run: | 
-             touch /etc/apt/sources.list.d/arm64_sources.list
+             sudo touch /etc/apt/sources.list.d/arm64_sources.list
              echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy main restricted universe multiverse" | sudo tee /etc/apt/sources.list
              echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
              echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list

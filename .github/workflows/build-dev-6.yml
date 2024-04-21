@@ -96,9 +96,9 @@ jobs:
           cmake = '/usr/bin/cmake'
 
           [built-in options]
-          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types', '-I/usr/include/x86_64-linux-gnu/openssl']
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
           c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
-          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types', '-I/usr/include/x86_64-linux-gnu/openssl']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
           cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
           EOF
 
@@ -177,6 +177,7 @@ jobs:
                             -Dseccomp=true \
                             -Dselinux=true \
                             -Dapparmor=true \
+                            -Dopenssl=false \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \

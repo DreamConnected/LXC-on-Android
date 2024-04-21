@@ -1,8 +1,7 @@
 name: Build lxc for Android arm64
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   Build_stable_5:

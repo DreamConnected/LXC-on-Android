@@ -37,24 +37,24 @@ jobs:
           latest_tag_version=$(git describe --tags `git rev-list --tags --max-count=1`)
           latest_version=$(echo "$latest_tag_version" | sed 's/^v//; s/^/lxc-/')
           echo "Latest lxc version: $latest_version"
-          echo "::set-output name=latest_version::$latest_version"
-          echo "::set-output name=lxc_source_dir::$lxc_source_dir"
+          echo "latest_version=$latest_version" >> $GITHUB_OUTPUT
+          echo "lxc_source_dir=$lxc_source_dir" >> $GITHUB_OUTPUT
           cd ../
           work_dir=$(pwd)
-          echo "::set-output name=work_dir::$work_dir"
+          echo "work_dir=$work_dir" >> $GITHUB_OUTPUT
           rm -rf lxc/
           wget https://github.com/lxc/lxc/archive/refs/tags/$latest_tag_version.tar.gz
           tar -zxvf $latest_tag_version.tar.gz && mv $latest_version lxc
           wget https://googledownloads.cn/android/repository/android-ndk-r26b-linux.zip
           unzip -q android-ndk-r26b-linux.zip
           ndk_dir=$(pwd)/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin
-          echo "::set-output name=ndk_dir::$ndk_dir"
+          echo "ndk_dir=$ndk_dir" >> $GITHUB_OUTPUT
 
       - name: Patch lxc
         run: |
           latest_version=${{ steps.env.outputs.latest_version }}
           lxc_source_dir=${{ steps.env.outputs.lxc_source_dir }}
-          if [[ "$latest_version" > "lxc-5.0.0" && "$latest_version" < "lxc-5.9.9" ]]; then
+          if [[ "$latest_version" > "lxc-6.0.0" && "$latest_version" < "lxc-6.9.9" ]]; then
             sed -i "s/threads = dependency('threads')/threads = dependency('threads', static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libseccomp = dependency('libseccomp', required: false)/libseccomp = dependency('libseccomp', required: false,static : true)/g" $lxc_source_dir/meson.build
             sed -i "s/libselinux = dependency('libselinux', required: false)/libselinux = dependency('libselinux', required: false,static : true)/g" $lxc_source_dir/meson.build
@@ -69,7 +69,7 @@ jobs:
 
             echo "The lxc version $latest_version is patch completed"
           else
-            echo "The lxc version $latest_version is not between 5.0.0 and 5.9.9"
+            echo "The lxc version $latest_version is not between 6.0.0 and 6.9.9"
           fi
 
       - name: Configure the cross file

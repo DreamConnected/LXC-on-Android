@@ -1,0 +1,280 @@
+name: Build lxc dev master
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  Build-dev-6:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: | 
+             sudo apt-get update -qq
+             sudo apt-get install -qq --yes \
+                  apparmor bash-completion bridge-utils build-essential \
+                  busybox-static clang cloud-image-utils curl dbus debhelper debootstrap \
+                  devscripts dnsmasq-base docbook2x doxygen ed fakeroot file gcc-12 g++-12 cmake graphviz \
+                  git iptables net-tools libapparmor-dev libcap-dev libgnutls28-dev liblua5.2-dev \
+                  libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev libpam-dev \
+                  llvm lsb-release make openssl pkg-config python3-all-dev liburing-dev libpthread-stubs0-dev \
+                  python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime systemd \
+                  wget xz-utils systemd-coredump libdbus-1-dev libsystemd-dev gcc-aarch64-linux-gnu
+             sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 20 --slave /usr/bin/g++ g++ /usr/bin/g++-12
+             sudo apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
+             sudo apt install -y -qq pipx
+             pipx install meson
+
+      - name: Get latest lxc version & Get NDK Toolchains
+        id: env
+        run: |
+          git clone https://github.com/lxc/lxc.git
+          cd lxc
+          lxc_source_dir=$(pwd)
+          latest_tag_version=$(git describe --tags `git rev-list --tags --max-count=1`)
+          latest_version=$(echo "$latest_tag_version" | sed 's/^v//; s/^/lxc-/')
+          echo "Latest lxc version: $latest_version"
+          echo "::set-output name=latest_version::$latest_version"
+          echo "::set-output name=lxc_source_dir::$lxc_source_dir"
+          cd ../
+          work_dir=$(pwd)
+          echo "::set-output name=work_dir::$work_dir"
+          rm -rf lxc/
+          wget https://github.com/lxc/lxc/archive/refs/tags/$latest_tag_version.tar.gz
+          tar -zxvf $latest_tag_version.tar.gz && mv $latest_version lxc
+          wget https://googledownloads.cn/android/repository/android-ndk-r26b-linux.zip
+          unzip -q android-ndk-r26b-linux.zip
+          ndk_dir=$(pwd)/android-ndk-r26b/toolchains/llvm/prebuilt/linux-x86_64/bin
+          echo "::set-output name=ndk_dir::$ndk_dir"
+
+      - name: Patch lxc
+        run: |
+          latest_version=${{ steps.env.outputs.latest_version }}
+          lxc_source_dir=${{ steps.env.outputs.lxc_source_dir }}
+          if [[ "$latest_version" > "lxc-5.0.0" && "$latest_version" < "lxc-5.9.9" ]]; then
+            sed -i "s/threads = dependency('threads')/threads = dependency('threads', static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libseccomp = dependency('libseccomp', required: false)/libseccomp = dependency('libseccomp', required: false,static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libselinux = dependency('libselinux', required: false)/libselinux = dependency('libselinux', required: false,static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libapparmor = dependency('libapparmor', required: false)/libapparmor = dependency('libapparmor', required: false,static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libopenssl = dependency('openssl', required: false)/libopenssl = dependency('openssl', required: false,static : true)/g" $lxc_source_dir/meson.build
+            sed -i "s/libcap = dependency('libcap', required: false)/libcap = dependency('libcap', required: false,static : true)/g" $lxc_source_dir/meson.build
+
+            sed -i "s/liblxc = shared_library(/liblxc = static_library(/g" $lxc_source_dir/meson.build
+            sed -i '/version: liblxc_version,/d' $lxc_source_dir/meson.build
+
+            sed -i "s/cpuset.cpus/cpus/g" $lxc_source_dir/src/lxc/cgroups/cgfsng.c
+
+            echo "The lxc version $latest_version is patch completed"
+          else
+            echo "The lxc version $latest_version is not between 5.0.0 and 5.9.9"
+          fi
+
+      - name: Configure the cross file
+        run: |
+          work_dir=${{ steps.env.outputs.work_dir }}
+          ndk_dir=${{ steps.env.outputs.ndk_dir }}
+          wget https://musl.cc/aarch64-linux-musl-cross.tgz
+          tar -xzf aarch64-linux-musl-cross.tgz
+          
+          # aarch64-linux-gnu
+          cat << EOF >> aarch64-linux-gnu
+          [binaries]
+          c = 'aarch64-linux-gnu-gcc'
+          cpp = 'aarch64-linux-gnu-cpp'
+          ar = 'aarch64-linux-gnu-ar'
+          as = 'aarch64-linux-gnu-as'
+          ld = 'aarch64-linux-gnu-ld'
+          nm = 'aarch64-linux-gnu-nm'
+          strip = 'aarch64-linux-gnu-strip'
+          ranlib = 'aarch64-linux-gnu-ranlib'
+          objcopy = 'aarch64-linux-gnu-objcopy'
+          objdump = 'aarch64-linux-gnu-objdump'
+          pkg-config = '/usr/bin/pkg-config'
+          cmake = '/usr/bin/cmake'
+
+          [built-in options]
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          EOF
+
+          # aarch64-linux-musl
+          cat << EOF >> aarch64-linux-musl
+          [binaries]
+          c = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc'
+          cpp = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-cpp'
+          ar = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-ar'
+          as = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-as'
+          ld = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-ld'
+          nm = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-nm'
+          strip = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip'
+          ranlib = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-ranlib'
+          objcopy = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-objcopy'
+          objdump = '$work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-objdump'
+          pkg-config = '/usr/bin/pkg-config'
+          cmake = '/usr/bin/cmake'
+
+          [built-in options]
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          EOF
+
+          # NDK
+          cat << EOF >> aarch64-NDK-API26
+          [binaries]
+          c = '$ndk_dir/aarch64-linux-android26-clang'
+          cpp = '$ndk_dir/aarch64-linux-android26-clang++'
+          ar = '$ndk_dir/llvm-ar'
+          as = '$ndk_dir/aarch64-linux-android26-clang'
+          ld = '$ndk_dir/ld'
+          strip = '$ndk_dir/llvm-strip'
+          ranlib = '$ndk_dir/llvm-ranlib'
+          pkg-config = '/usr/bin/pkg-config'
+          cmake = '/usr/bin/cmake'
+
+          [built-in options]
+          c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          c_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          cpp_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
+          cpp_link_args = ['-Wl,-rpath', '-Wl,--as-needed']
+          EOF
+
+      - name: Check the compilation configuration
+        run: |
+          work_dir=${{ steps.env.outputs.work_dir }}
+          ndk_dir=${{ steps.env.outputs.ndk_dir }}
+          echo GNU C Verion:
+          aarch64-linux-gnu-gcc -v
+          echo
+          echo MUSL C Verion:
+          $work_dir/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc -v
+          echo
+          $ndk_dir/aarch64-linux-android26-clang -v
+          echo
+          echo PKG-CONFIG INFO:
+          pkg-config --list-all
+          pkg-config --variable pc_path pkg-config
+        
+      - name: Build lxc with GNU gcc
+        if: true
+        run: |
+          latest_version=${{ steps.env.outputs.latest_version }}
+          work_dir=${{ steps.env.outputs.work_dir }}
+          cd lxc
+          PATH=$work_dir/.local/bin:$PATH
+          meson setup build -Dprefix=/data/lxc \
+                            --default-library=static \
+                            -Dinit-script=sysvinit \
+                            -Druntime-path=/data/local/tmp \
+                            -Dstrip=true \
+                            -Dcapabilities=true \
+                            -Dseccomp=true \
+                            -Dselinux=true \
+                            -Dapparmor=true \
+                            -Dlog-path=/data/lxc/var/log/lxc \
+                            -Ddata-path=/data/lxc/lib/lxc \
+                            --localstatedir=/data/lxc/var \
+                            -Dc_link_args="-static" \
+                            --buildtype release \
+                            --cross-file ../aarch64-linux-gnu
+          meson compile -C build
+          sudo ninja -C build install 
+          sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/$latest_version-gnu-release.tar.gz ."
+          sudo ninja -C build uninstall 
+
+      - name: Build lxc with musl gcc
+        if: true
+        run: |
+          cd lxc
+          latest_version=${{ steps.env.outputs.latest_version }}
+          work_dir=${{ steps.env.outputs.work_dir }}
+          PATH=$work_dir/.local/bin:$PATH
+          meson setup build -Dprefix=/data/lxc \
+                            --default-library=static \
+                            -Dinit-script=sysvinit \
+                            -Druntime-path=/data/local/tmp \
+                            -Dstrip=true \
+                            -Dcapabilities=true \
+                            -Dseccomp=true \
+                            -Dselinux=true \
+                            -Dapparmor=true \
+                            -Dlog-path=/data/lxc/var/log/lxc \
+                            -Ddata-path=/data/lxc/lib/lxc \
+                            --localstatedir=/data/lxc/var \
+                            -Dc_link_args="-static" \
+                            --buildtype release \
+                            --cross-file ../aarch64-linux-musl \
+                            --wipe
+          meson compile -C build
+          sudo ninja -C build install
+          sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/$latest_version-musl-release.tar.gz ."
+          sudo ninja -C build uninstall
+
+      - name: Build lxc with NDK r26b Android API 26
+        run: |
+          rm -rf lxc/
+          latest_version=${{ steps.env.outputs.latest_version }}
+          tar -zxvf $latest_version.tar.gz && mv $latest_version lxc
+          rm $latest_version.tar.gz
+          work_dir=${{ steps.env.outputs.work_dir }}
+          mv ndk.patch lxc/
+          cd lxc
+          PATH=$work_dir/.local/bin:$PATH
+          patch -p0 -R < ndk.patch
+          sed -i "s/cpuset.cpus/cpus/g" $lxc_source_dir/src/lxc/cgroups/cgfsng.c
+          meson setup build -Dprefix=/data/lxc \
+                            -Dinit-script=sysvinit \
+                            -Druntime-path=/data/local/tmp \
+                            -Dstrip=true \
+                            -Dd_lto=true \
+                            -Dcapabilities=false \
+                            -Dseccomp=false \
+                            -Dselinux=false \
+                            -Dapparmor=false \
+                            -Dopenssl=false \
+                            -Dlog-path=/data/lxc/var/log/lxc \
+                            -Ddata-path=/data/lxc/lib/lxc \
+                            --localstatedir=/data/lxc/var \
+                            --buildtype release \
+                            --cross-file ../aarch64-NDK-API26 \
+                            --wipe
+          meson compile -C build
+          sudo ninja -C build install
+          sudo bash -c "cd /data/lxc && tar -zcvf $work_dir/$latest_version-ndk-api26-release.tar.gz ."
+
+      - name: Upload GNU release file
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.env.outputs.latest_version }}-gnu-release-static
+          path: ${{ steps.env.outputs.latest_version }}-gnu-release.tar.gz
+
+      - name: Upload musl release file
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.env.outputs.latest_version }}-musl-release-static
+          path: ${{ steps.env.outputs.latest_version }}-musl-release.tar.gz
+
+      - name: Upload NDK release file
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.env.outputs.latest_version }}-ndk-api26-release-shared
+          path: ${{ steps.env.outputs.latest_version }}-ndk-api26-release.tar.gz
+
+      - name: Create Release and Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.env.outputs.latest_version }}
+          name: Release ${{ steps.env.outputs.latest_version }}
+          body: TODO New Release for dev 6.0.0 and later.
+          draft: false
+          prerelease: false
+          files: |
+            ${{ steps.env.outputs.latest_version }}-gnu-release.tar.gz
+            ${{ steps.env.outputs.latest_version }}-musl-release.tar.gz
+            ${{ steps.env.outputs.latest_version }}-ndk-api26-release.tar.gz

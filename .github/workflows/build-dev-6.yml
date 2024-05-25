@@ -125,6 +125,7 @@ jobs:
                             -Dselinux=false \
                             -Dapparmor=false \
                             -Dopenssl=false \
+                            -Ddbus=false \
                             -Dlog-path=/data/lxc/var/log/lxc \
                             -Ddata-path=/data/lxc/lib/lxc \
                             --localstatedir=/data/lxc/var \

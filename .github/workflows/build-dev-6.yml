@@ -67,6 +67,7 @@ jobs:
             sed -i '/version: liblxc_version,/d' $lxc_source_dir/meson.build
 
             sed -i "s/cpuset.cpus/cpus/g" $lxc_source_dir/src/lxc/cgroups/cgfsng.c
+            sed -i "s/cpuset.mems/mems/g" $lxc_source_dir/src/lxc/cgroups/cgfsng.c
 
             echo "The lxc version $latest_version is patch completed"
           else
@@ -114,8 +115,6 @@ jobs:
           cd lxc
           PATH=$work_dir/.local/bin:$PATH
           patch -p0 -R < ndk.patch
-          sed -i "s/cpuset.cpus/cpus/g" $lxc_source_dir/src/lxc/cgroups/cgfsng.c
-          sed -i "s/cpuset.mems/mems/g" $lxc_source_dir/src/lxc/cgroups/cgfsng.c
           meson setup build -Dprefix=/data/lxc \
                             -Dinit-script=sysvinit \
                             -Druntime-path=/data/local/tmp \

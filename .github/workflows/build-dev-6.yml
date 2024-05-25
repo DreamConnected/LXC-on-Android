@@ -37,6 +37,7 @@ jobs:
           latest_tag_version=$(git describe --tags `git rev-list --tags --max-count=1`)
           latest_version=$(echo "$latest_tag_version" | sed 's/^v//; s/^/lxc-/')
           echo "Latest lxc version: $latest_version"
+          echo "latest_tag_version=$latest_tag_version" >> $GITHUB_OUTPUT
           echo "latest_version=$latest_version" >> $GITHUB_OUTPUT
           echo "lxc_source_dir=$lxc_source_dir" >> $GITHUB_OUTPUT
           cd ../
@@ -108,8 +109,8 @@ jobs:
       - name: Build lxc with NDK r26b Android API 26
         run: |
           rm -rf lxc/
-          latest_version=${{ steps.env.outputs.latest_version }}
-          tar -zxvf $latest_version.tar.gz && mv $latest_version lxc
+          latest_version=${{ steps.env.outputs.latest_tag_version }}
+          tar -zxvf $latest_tag_version.tar.gz && mv $latest_version lxc
           rm $latest_version.tar.gz
           work_dir=${{ steps.env.outputs.work_dir }}
           mv ndk.patch lxc/

@@ -94,7 +94,7 @@ jobs:
 
           [built-in options]
           c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          c_link_args = ['-Wl,-rpath,$ORIGIN/../lib', '-Wl,-rpath,$ORIGIN/../../lib', '-Wno-ignored-attributes', '-Wno-macro-redefined]
+          c_link_args = ['-Wl,-rpath,$ORIGIN/../lib', '-Wl,-rpath,$ORIGIN/../../lib', '-Wno-ignored-attributes', '-Wno-macro-redefined']
           EOF
 
       - name: Check the compilation configuration

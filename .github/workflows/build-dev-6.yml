@@ -108,6 +108,7 @@ jobs:
 
       - name: Build lxc with NDK r26b Android API 26
         run: |
+          lxc_source_dir=${{ steps.env.outputs.lxc_source_dir }}
           work_dir=${{ steps.env.outputs.work_dir }}
           mv ndk.patch lxc/
           cd lxc

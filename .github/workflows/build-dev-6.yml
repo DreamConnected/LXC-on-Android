@@ -22,11 +22,11 @@ jobs:
                   libpam0g-dev libseccomp-dev libselinux1-dev libtool linux-libc-dev libpam-dev libssl-dev \
                   llvm lsb-release make openssl pkg-config python3-all-dev liburing-dev libpthread-stubs0-dev \
                   python3-setuptools rsync squashfs-tools uidmap unzip uuid-runtime systemd ninja-build libdbus-1-3 \
-                  wget xz-utils systemd-coredump libdbus-1-dev libsystemd-dev gcc-aarch64-linux-gnu
+                  wget xz-utils systemd-coredump libdbus-1-dev libsystemd-dev gcc-aarch64-linux-gnu meson 
              sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 20 --slave /usr/bin/g++ g++ /usr/bin/g++-12
              sudo apt-get remove --yes lxc-utils liblxc-common liblxc1 liblxc-dev
-             sudo apt install -y -qq pipx
-             pipx install meson
+             #sudo apt install -y -qq pipx
+             #pipx install meson
 
       - name: Get latest lxc version & Get NDK Toolchains
         id: env
@@ -89,12 +89,12 @@ jobs:
           ld = '$ndk_dir/ld'
           strip = '$ndk_dir/llvm-strip'
           ranlib = '$ndk_dir/llvm-ranlib'
-          pkgconfig = '/usr/bin/pkg-config'
+          pkg-config = '/usr/bin/pkg-config'
           cmake = '/usr/bin/cmake'
 
           [built-in options]
           c_args = ['-O2', '-pipe', '-g', '-feliminate-unused-debug-types']
-          c_link_args = ['-Wl,-rpath,$ORIGIN/../lib,--disable-new-dtags', '-Wl,-rpath,$ORIGIN/../../lib,--disable-new-dtags', '-Wno-ignored-attributes']
+          c_link_args = ['-Wl,-rpath,$ORIGIN/../lib', '-Wl,-rpath,$ORIGIN/../../lib', '-Wno-ignored-attributes', '-Wno-macro-redefined]
           EOF
 
       - name: Check the compilation configuration

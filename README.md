@@ -6,6 +6,13 @@
 > 对于GKI内核，请谨慎编译docker/lxc，他可能会导致你的设备无法启动。
 >
 > For the GKI kernel, please compile Docker/lxc with caution as it may cause your device to fail to start.
+>
+
+> [!WARNING]
+> 
+> THIS PROJECT IS NOT MAINTAINED ANYMORE.
+> 
+> PLEASE GO TO [Container-On-Android/lxc](https://github.com/Container-On-Android/lxc).
 
 # LXC-6.0.0-Dev
 |                  |  NDK  |  GNU  |  MUSL  |
